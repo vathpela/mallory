@@ -106,7 +106,7 @@
 #elif defined(VENDOR_CERT_FILE)
 # define vendor_authorized vendor_cert
 # define vendor_authorized_size vendor_cert_size
-# define vendor_authorized_category VENDOR_CERT_CERT
+# define vendor_authorized_category VENDOR_CERT_X509
 #else
 # define vendor_authorized_category VENDOR_CERT_NONE
 #endif

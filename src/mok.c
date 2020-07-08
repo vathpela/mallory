@@ -177,8 +177,8 @@ mirror_one_mok_variable(struct mok_state_variable *v)
 	if ((v->flags & MOK_MIRROR_KEYDB) && check_addend(v)) {
 		EFI_SIGNATURE_LIST *CertList = NULL;
 		EFI_SIGNATURE_DATA *CertData = NULL;
-#if defined(ENABLE_SHIM_CERT)
 		FullDataSize = v->data_size;
+#if defined(ENABLE_SHIM_CERT)
 		if (check_build_cert(v)) {
 			FullDataSize += sizeof (*CertList)
 					+ sizeof (EFI_GUID)
