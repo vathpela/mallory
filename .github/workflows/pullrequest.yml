@@ -3,7 +3,7 @@ name: pull-request-builds
 on:
   pull_request:
     branches:
-      - main
+      - github-actions-ci
 
 jobs:
   pull-request-f34-x64:
