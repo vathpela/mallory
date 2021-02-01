@@ -6,13 +6,21 @@ on:
       - github-actions-ci
 
 jobs:
-  pull-request-f34-x64:
+  pull-request-f34:
     runs-on: ubuntu-20.04
     container: vathpela/efi-ci:f34
     name: f34 build
+    strategy:
+      matrix:
+        include:
+          - arch: aarch64
+            distro: fedora_latest
+          - arch: x64
+            distro: fedora_latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        uses: uraimo/run-on-arch-action@v2.0.5
         with:
           # otherwise we are testing target branch instead of the PR branch (see pull_request_target trigger)
           ref: ${{ github.event.pull_request.head.sha }}
@@ -20,12 +28,6 @@ jobs:
       - name: fetch-origin
         run: git fetch origin
         id: fetch-origin
-      - name: dammit0
-        run: git remote -v
-        id: dammit0
-      - name: dammit1
-        run: ls .git/refs/heads/
-        id: dammit1
       - name: Do the build
         run: make PREFIX=/usr LIBDIR=/usr/lib64 DESTDIR=/destdir EFIDIR=test ENABLE_HTTPBOOT=true ENABLE_SHIM_HASH=true clean all
         id: build
