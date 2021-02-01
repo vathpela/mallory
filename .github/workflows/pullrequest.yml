@@ -3,10 +3,10 @@ name: pull-request
 on:
   push:
     branches:
-      - main
+      - github-actions-ci-main
   pull_request:
     branches:
-      - main
+      - github-actions-ci-main
 
 jobs:
   cross-build-pull-request:
