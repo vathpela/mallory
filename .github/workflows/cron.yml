@@ -1,0 +1,97 @@
+name: nightly
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+
+jobs:
+  build-arm:
+    runs-on: ubuntu-20.04
+    name: ${{ matrix.distro }} ${{ matrix.efiarch }} build
+
+    strategy:
+      matrix:
+        include:
+          - arch: aarch64
+            efiarch: aa64
+            makearch: aarch64
+            distro: efi-ci-f34
+          - arch: aarch64
+            efiarch: aa64
+            makearch: aarch64
+            distro: efi-ci-f33
+          - arch: aarch64
+            efiarch: aa64
+            makearch: aarch64
+            distro: efi-ci-f32
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - uses: vathpela/run-on-arch-action@v2.0.8.1
+        name: Do the build on ${{ matrix.distro }} for ${{ matrix.efiarch }}
+        id: build
+        with:
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+          githubToken: ${{ github.token }}
+          shell: /bin/bash
+          run: |
+            make update
+            make -s ARCH=${{ matrix.makearch }} PREFIX=/usr DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true test || make ARCH=${{ matrix.makearch }} PREFIX=/usr DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true test
+            make -s ARCH=${{ matrix.makearch }} PREFIX=/usr DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true clean all || make ARCH=${{ matrix.makearch }} PREFIX=/usr DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true clean all
+            make -s ARCH=${{ matrix.makearch }} PREFIX=/usr DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true install || make ARCH=${{ matrix.makearch }} PREFIX=/usr DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true install
+            echo 'results:'
+            find /destdir -type f
+
+  build-intel:
+    runs-on: ubuntu-20.04
+    container: vathpela/efi-ci:f34-x64
+    name: ${{ matrix.distro }} ${{ matrix.efiarch }} build
+
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            efiarch: x64
+            makearch: x86_64
+            distro: efi-ci-f34
+          - arch: amd64
+            efiarch: x64
+            makearch: x86_64
+            distro: efi-ci-f33
+          - arch: amd64
+            efiarch: x64
+            makearch: x86_64
+            distro: efi-ci-f32
+          - arch: amd64
+            efiarch: ia32
+            makearch: ia32
+            distro: efi-ci-f34
+          - arch: amd64
+            efiarch: ia32
+            makearch: ia32
+            distro: efi-ci-f33
+          - arch: amd64
+            efiarch: ia32
+            makearch: ia32
+            distro: efi-ci-f32
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Do the build on ${{ matrix.distro }} for ${{ matrix.efiarch }}
+        id: build
+        run: |
+          make update
+          make -s ARCH=${{ matrix.makearch }} PREFIX=/usr DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true test || make ARCH=${{ matrix.makearch }} PREFIX=/usr DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true test
+          make -s ARCH=${{ matrix.makearch }} PREFIX=/usr DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true clean all || make ARCH=${{ matrix.makearch }} PREFIX=/usr DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true clean all
+          make -s ARCH=${{ matrix.makearch }} PREFIX=/usr DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true install || make ARCH=${{ matrix.makearch }} PREFIX=/usr DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true install
+          echo 'results:'
+          find /destdir -type f
