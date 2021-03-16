@@ -62,3 +62,54 @@ jobs:
           make -s ARCH=${{ matrix.makearch }} PREFIX=/usr LIBDIR=${{ matrix.libdir }} DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true install || make ARCH=${{ matrix.makearch }} PREFIX=/usr LIBDIR=${{ matrix.libdir }} DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true install
           echo 'results:'
           find /destdir -type f
+
+  pull-request-arm:
+    runs-on: ubuntu-20.04
+    container: vathpela/efi-ci:f34-x64
+    name: ${{ matrix.distro }} ${{ matrix.efiarch }} build
+
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            efiarch: aa64
+            makearch: aarch64
+            distro: efi-ci-f34
+            libdir: /usr/lib64
+          - arch: amd64
+            efiarch: aa64
+            makearch: aarch64
+            distro: efi-ci-f33
+            libdir: /usr/lib64
+          - arch: amd64
+            efiarch: aa64
+            makearch: aarch64
+            distro: efi-ci-f32
+            libdir: /usr/lib64
+          - arch: amd64
+            efiarch: arm
+            makearch: arm
+            distro: efi-ci-f34
+            libdir: /usr/lib
+          - arch: amd64
+            efiarch: arm
+            makearch: arm
+            distro: efi-ci-f33
+            libdir: /usr/lib
+          - arch: amd64
+            efiarch: arm
+            makearch: arm
+            distro: efi-ci-f32
+            libdir: /usr/lib
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Do the build on ${{ matrix.distro }} for ${{ matrix.efiarch }}
+        id: build
+        run: |
+          make update || :
+          make -s CROSS_COMPILE=${{ matrix.makearch }}-linux-gnu- ARCH=${{ matrix.makearch }} PREFIX=/usr LIBDIR=${{ matrix.libdir }} DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true clean all || make CROSS_COMPILE=${{ matrix.makearch }}-linux-gnu- ARCH=${{ matrix.makearch }} PREFIX=/usr LIBDIR=${{ matrix.libdir }} DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true all
+          make -s CROSS_COMPILE=${{ matrix.makearch }}-linux-gnu- ARCH=${{ matrix.makearch }} PREFIX=/usr LIBDIR=${{ matrix.libdir }} DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true install || make CROSS_COMPILE=${{ matrix.makearch }}-linux-gnu- ARCH=${{ matrix.makearch }} PREFIX=/usr LIBDIR=${{ matrix.libdir }} DESTDIR=/destdir EFIDIR=test ENABLE_SHIM_HASH=true install
+          echo 'results:'
+          find /destdir -type f
