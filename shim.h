@@ -68,97 +68,12 @@
 #include "include/test.h"
 #endif
 
-#ifdef __x86_64__
-#ifndef DEFAULT_LOADER
-#define DEFAULT_LOADER L"\\grubx64.efi"
-#endif
-#ifndef DEFAULT_LOADER_CHAR
-#define DEFAULT_LOADER_CHAR "\\grubx64.efi"
-#endif
-#ifndef EFI_ARCH
-#define EFI_ARCH L"x64"
-#endif
-#ifndef DEBUGDIR
-#define DEBUGDIR L"/usr/lib/debug/usr/share/shim/x64/"
-#endif
-#endif
-
-#if defined(__i686__) || defined(__i386__)
-#ifndef DEFAULT_LOADER
-#define DEFAULT_LOADER L"\\grubia32.efi"
-#endif
-#ifndef DEFAULT_LOADER_CHAR
-#define DEFAULT_LOADER_CHAR "\\grubia32.efi"
-#endif
-#ifndef EFI_ARCH
-#define EFI_ARCH L"ia32"
-#endif
-#ifndef DEBUGDIR
-#define DEBUGDIR L"/usr/lib/debug/usr/share/shim/ia32/"
-#endif
-#endif
-
-#if defined(__aarch64__)
-#ifndef DEFAULT_LOADER
-#define DEFAULT_LOADER L"\\grubaa64.efi"
-#endif
-#ifndef DEFAULT_LOADER_CHAR
-#define DEFAULT_LOADER_CHAR "\\grubaa64.efi"
-#endif
-#ifndef EFI_ARCH
-#define EFI_ARCH L"aa64"
-#endif
-#ifndef DEBUGDIR
-#define DEBUGDIR L"/usr/lib/debug/usr/share/shim/aa64/"
-#endif
-#endif
-
-#if defined(__arm__)
-#ifndef DEFAULT_LOADER
-#define DEFAULT_LOADER L"\\grubarm.efi"
-#endif
-#ifndef DEFAULT_LOADER_CHAR
-#define DEFAULT_LOADER_CHAR "\\grubarm.efi"
-#endif
-#ifndef EFI_ARCH
-#define EFI_ARCH L"arm"
-#endif
-#ifndef DEBUGDIR
-#define DEBUGDIR L"/usr/lib/debug/usr/share/shim/arm/"
-#endif
-#endif
-
-#ifndef DEBUGSRC
-#define DEBUGSRC L"/usr/src/debug/shim-" VERSIONSTR "." EFI_ARCH
-#endif
-
-#define FALLBACK L"\\fb" EFI_ARCH L".efi"
-#define MOK_MANAGER L"\\mm" EFI_ARCH L".efi"
-
-#if defined(VENDOR_DB_FILE)
-# define vendor_authorized vendor_db
-# define vendor_authorized_size vendor_db_size
-# define vendor_authorized_category VENDOR_ADDEND_DB
-#elif defined(VENDOR_CERT_FILE)
-# define vendor_authorized vendor_cert
-# define vendor_authorized_size vendor_cert_size
-# define vendor_authorized_category VENDOR_ADDEND_X509
-#else
-# define vendor_authorized vendor_null
-# define vendor_authorized_size vendor_null_size
-# define vendor_authorized_category VENDOR_ADDEND_NONE
-#endif
-
-#if defined(VENDOR_DBX_FILE)
-# define vendor_deauthorized vendor_dbx
-# define vendor_deauthorized_size vendor_dbx_size
-#else
-# define vendor_deauthorized vendor_deauthorized_null
-# define vendor_deauthorized_size vendor_deauthorized_null_size
-#endif
-
 #include "include/asm.h"
 #include "include/compiler.h"
+
+#include "include/arch.h"
+#include "include/defines.h"
+
 #include "include/list.h"
 #include "include/configtable.h"
 #include "include/console.h"
@@ -185,6 +100,7 @@
 #endif
 #include "include/simple_file.h"
 #include "include/str.h"
+#include "include/types.h"
 #include "include/tpm.h"
 #include "include/cc.h"
 #include "include/ucs2.h"
@@ -200,39 +116,6 @@
 #define MEM_ATTR_R	4
 #define MEM_ATTR_W	2
 #define MEM_ATTR_X	1
-
-INTERFACE_DECL(_SHIM_LOCK);
-
-typedef
-EFI_STATUS
-(*EFI_SHIM_LOCK_VERIFY) (
-	IN VOID *buffer,
-	IN UINT32 size
-	);
-
-typedef
-EFI_STATUS
-(*EFI_SHIM_LOCK_HASH) (
-	IN char *data,
-	IN int datasize,
-	PE_COFF_LOADER_IMAGE_CONTEXT *context,
-	UINT8 *sha256hash,
-	UINT8 *sha1hash
-	);
-
-typedef
-EFI_STATUS
-(*EFI_SHIM_LOCK_CONTEXT) (
-	IN VOID *data,
-	IN unsigned int datasize,
-	PE_COFF_LOADER_IMAGE_CONTEXT *context
-	);
-
-typedef struct _SHIM_LOCK {
-	EFI_SHIM_LOCK_VERIFY Verify;
-	EFI_SHIM_LOCK_HASH Hash;
-	EFI_SHIM_LOCK_CONTEXT Context;
-} SHIM_LOCK;
 
 extern EFI_STATUS shim_init(void);
 extern void shim_fini(void);

@@ -62,8 +62,7 @@ COMMIT_ID ?= $(shell if [ -e .git ] ; then git log -1 --pretty=format:%H ; elif 
 
 ifeq ($(ARCH),x86_64)
 	ARCH_CFLAGS		?= -mno-mmx -mno-sse -mno-red-zone -nostdinc \
-				   $(CLANG_BUGS) -m64 \
-				   -DMDE_CPU_X64 -DPAGE_SIZE=4096
+				   $(CLANG_BUGS) -m64
 	ARCH_GNUEFI		?= x86_64
 	ARCH_SUFFIX		?= x64
 	ARCH_SUFFIX_UPPER	?= X64
@@ -71,8 +70,7 @@ ifeq ($(ARCH),x86_64)
 endif
 ifeq ($(ARCH),ia32)
 	ARCH_CFLAGS		?= -mno-mmx -mno-sse -mno-red-zone -nostdinc \
-				   $(CLANG_BUGS) -m32 \
-				   -DMDE_CPU_IA32 -DPAGE_SIZE=4096
+				   $(CLANG_BUGS) -m32
 	ARCH_GNUEFI		?= ia32
 	ARCH_SUFFIX		?= ia32
 	ARCH_SUFFIX_UPPER	?= IA32
@@ -80,7 +78,7 @@ ifeq ($(ARCH),ia32)
 	ARCH_CFLAGS		?= -m32
 endif
 ifeq ($(ARCH),aarch64)
-	ARCH_CFLAGS		?= -DMDE_CPU_AARCH64 -DPAGE_SIZE=4096 -mstrict-align
+	ARCH_CFLAGS		?= -mstrict-align
 	ARCH_GNUEFI		?= aarch64
 	ARCH_SUFFIX		?= aa64
 	ARCH_SUFFIX_UPPER	?= AA64
@@ -88,7 +86,7 @@ ifeq ($(ARCH),aarch64)
 	ARCH_CFLAGS		?=
 endif
 ifeq ($(ARCH),arm)
-	ARCH_CFLAGS		?= -DMDE_CPU_ARM -DPAGE_SIZE=4096 -mno-unaligned-access
+	ARCH_CFLAGS		?= -mno-unaligned-access
 	ARCH_GNUEFI		?= arm
 	ARCH_SUFFIX		?= arm
 	ARCH_SUFFIX_UPPER	?= ARM
@@ -97,8 +95,9 @@ ifeq ($(ARCH),arm)
 	ARCH_LDFLAGS		+= --defsym=EFI_SUBSYSTEM=$(SUBSYSTEM)
 endif
 
-DEFINES		= -DDEFAULT_LOADER='L"$(DEFAULT_LOADER)"' \
-		  -DDEFAULT_LOADER_CHAR='"$(DEFAULT_LOADER)"'
+DEFINES		=  -DDASHRELEASE_CHAR8='"$(DASHRELEASE)"' \
+		   -DDEFAULT_LOADER_CHAR='"$(DEFAULT_LOADER)"' \
+		   -DVERSION_CHAR8='"$(VERSION)"'
 
 INCLUDES	= -nostdinc \
 		  -I$(TOPDIR)/Cryptlib -I$(TOPDIR)/Cryptlib/Include \
@@ -173,9 +172,6 @@ SHIMSONAME	= $(SHIMSTEM).so
 SHIMHASHNAME	= $(SHIMSTEM).hash
 BOOTEFINAME	?= BOOT$(ARCH_SUFFIX_UPPER).EFI
 BOOTCSVNAME	?= BOOT$(ARCH_SUFFIX_UPPER).CSV
-
-DEFINES		+= -DEFI_ARCH='L"$(ARCH_SUFFIX)"' \
-		   -DDEBUGDIR='L"/usr/lib/debug/usr/share/shim/$(ARCH_SUFFIX)-$(VERSION)$(DASHRELEASE)/"'
 
 ifneq ($(origin VENDOR_DB_FILE), undefined)
 DEFINES		+= -DVENDOR_DB_FILE=\"$(VENDOR_DB_FILE)\"

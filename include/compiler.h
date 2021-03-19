@@ -65,9 +65,6 @@
 #ifndef PACKED
 #define PACKED __attribute__((__packed__))
 #endif
-#ifndef VERSION
-#define VERSION(sym, ver) __asm__(".symver " # sym "," # ver)
-#endif
 #ifndef NORETURN
 #define NORETURN __attribute__((__noreturn__))
 #endif
@@ -101,6 +98,9 @@
 #endif
 #ifndef STRING
 #define STRING(x) __STRING(x)
+#endif
+#ifndef as_lstring
+#define as_lstring(x) __CONCAT(L, x)
 #endif
 
 #ifndef WRITE_ONCE

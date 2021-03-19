@@ -15,21 +15,7 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 #ifndef __OPEN_SSL_SUPPORT_H__
 #define __OPEN_SSL_SUPPORT_H__
 
-#if defined(__x86_64__)
-/* shim.h will check if the compiler is new enough in some other CU */
-
-#if !defined(GNU_EFI_USE_EXTERNAL_STDARG)
-#define GNU_EFI_USE_EXTERNAL_STDARG
-#endif
-
-#if !defined(GNU_EFI_USE_MS_ABI)
-#define GNU_EFI_USE_MS_ABI
-#endif
-
-#ifdef NO_BUILTIN_VA_FUNCS
-#undef NO_BUILTIN_VA_FUNCS
-#endif
-#endif
+#include "../../include/arch.h"
 
 /*
  * Include stddef.h to avoid redefining "offsetof"

@@ -35,35 +35,14 @@
 
 #define OID_EKU_MODSIGN "1.3.6.1.4.1.2312.16.1.2"
 
+extern struct cert_table cert_table;
+
 static EFI_SYSTEM_TABLE *systab;
 static EFI_HANDLE global_image_handle;
 static EFI_LOADED_IMAGE *shim_li;
 static EFI_LOADED_IMAGE shim_li_bak;
 
 list_t sbat_var;
-
-/*
- * The vendor certificate used for validating the second stage loader
- */
-extern struct {
-	UINT32 vendor_authorized_size;
-	UINT32 vendor_deauthorized_size;
-	UINT32 vendor_authorized_offset;
-	UINT32 vendor_deauthorized_offset;
-} cert_table;
-
-#define EFI_IMAGE_SECURITY_DATABASE_GUID { 0xd719b2cb, 0x3d3a, 0x4596, { 0xa3, 0xbc, 0xda, 0xd0, 0x0e, 0x67, 0x65, 0x6f }}
-
-typedef enum {
-	DATA_FOUND,
-	DATA_NOT_FOUND,
-	VAR_NOT_FOUND
-} CHECK_STATUS;
-
-typedef struct {
-	UINT32 MokSize;
-	UINT8 *Mok;
-} MokListNode;
 
 static void
 drain_openssl_errors(void)
@@ -1620,12 +1599,6 @@ debug_hook(void)
 	}
 	x = 1;
 }
-
-typedef enum {
-	COLD_RESET,
-	EXIT_FAILURE,
-	EXIT_SUCCESS,	// keep this one last
-} devel_egress_action;
 
 void
 devel_egress(devel_egress_action action UNUSED)
