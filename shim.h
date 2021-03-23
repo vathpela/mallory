@@ -174,7 +174,7 @@
 #include "include/load-options.h"
 #include "include/mok.h"
 #include "include/netboot.h"
-#include "include/passwordcrypt.h"
+#include "include/pwcrypt.h"
 #include "include/peimage.h"
 #include "include/pe.h"
 #include "include/replacements.h"

@@ -38,6 +38,7 @@ CFLAGS += -DENABLE_SHIM_CERT
 else
 TARGETS += $(MMNAME) $(FBNAME)
 endif
+
 KEYS = \
        ca.* \
        ocsp.* \
@@ -88,17 +89,17 @@ ORIG_SOURCES = \
 	       $(wildcard include/*.h)
 
 MOK_OBJS = \
-	   crypt_blowfish.o \
+	   blowfish.o \
 	   errlog.o \
 	   globals.o \
-	   MokManager.o \
-	   PasswordCrypt.o \
+	   mokmgr.o \
+	   pwcrypt.o \
 	   sbat_data.o
 
 ORIG_MOK_SOURCES = \
-		   crypt_blowfish.c \
-		   MokManager.c \
-		   PasswordCrypt.c \
+		   blowfish.c \
+		   mokmgr.c \
+		   pwcrypt.c \
 		   shim.h \
 		   $(wildcard include/*.h)
 
@@ -207,7 +208,7 @@ fallback.o: $(FALLBACK_SRCS)
 $(FBSONAME): $(FALLBACK_OBJS) $(LIBS)
 	$(LD) -o $@ $(LDFLAGS) $^ $(EFI_LIBS) lib/lib.a
 
-MokManager.o: $(MOK_SOURCES)
+mokmgr.o: $(MOK_SOURCES)
 
 $(MMSONAME): $(MOK_OBJS) $(LIBS)
 	$(LD) -o $@ $(LDFLAGS) $^ $(EFI_LIBS) lib/lib.a
