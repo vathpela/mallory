@@ -38,13 +38,79 @@ CFLAGS += -DENABLE_SHIM_CERT
 else
 TARGETS += $(MMNAME) $(FBNAME)
 endif
-OBJS	= shim.o globals.o mok.o netboot.o cert.o replacements.o tpm.o version.o errlog.o sbat.o sbat_data.o sbat_var.o pe.o httpboot.o csv.o load-options.o
-KEYS	= shim_cert.h ocsp.* ca.* shim.crt shim.csr shim.p12 shim.pem shim.key shim.cer
-ORIG_SOURCES	= shim.c globals.c mok.c netboot.c replacements.c tpm.c errlog.c sbat.c pe.c httpboot.c shim.h version.h $(wildcard include/*.h) cert.S sbat_var.S
-MOK_OBJS = MokManager.o PasswordCrypt.o crypt_blowfish.o errlog.o sbat_data.o globals.o
-ORIG_MOK_SOURCES = MokManager.c PasswordCrypt.c crypt_blowfish.c shim.h $(wildcard include/*.h)
-FALLBACK_OBJS = fallback.o tpm.o errlog.o sbat_data.o globals.o
+KEYS = \
+       ca.* \
+       ocsp.* \
+       shim.cer \
+       shim.crt \
+       shim.csr \
+       shim.key \
+       shim.p12 \
+       shim.pem \
+       shim_cert.h
+
+OBJS = \
+       cert.o \
+       csv.o \
+       errlog.o \
+       globals.o \
+       httpboot.o \
+       load-options.o \
+       mok.o \
+       netboot.o \
+       pe.o \
+       replacements.o \
+       sbat.o \
+       sbat_data.o \
+       sbat_var.o \
+       shim.o \
+       sbat_data.o \
+       tpm.o \
+       version.o
+
+ORIG_SOURCES = \
+	       cert.S \
+	       csv.c \
+	       errlog.c \
+	       globals.c \
+	       httpboot.c \
+	       load-options.c \
+	       mok.c \
+	       netboot.c \
+	       pe.c \
+	       replacements.c \
+	       sbat.c \
+	       sbat_var.S \
+	       shim.c \
+	       shim.h \
+	       tpm.c \
+	       version.h \
+	       $(wildcard include/*.h)
+
+MOK_OBJS = \
+	   crypt_blowfish.o \
+	   errlog.o \
+	   globals.o \
+	   MokManager.o \
+	   PasswordCrypt.o \
+	   sbat_data.o
+
+ORIG_MOK_SOURCES = \
+		   crypt_blowfish.c \
+		   MokManager.c \
+		   PasswordCrypt.c \
+		   shim.h \
+		   $(wildcard include/*.h)
+
+FALLBACK_OBJS = \
+		fallback.o \
+		errlog.o \
+		globals.o \
+		sbat_data.o \
+		tpm.o
+
 ORIG_FALLBACK_SRCS = fallback.c
+
 SBATPATH = $(TOPDIR)/data/sbat.csv
 
 ifeq ($(SOURCE_DATE_EPOCH),)
