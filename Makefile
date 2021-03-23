@@ -25,7 +25,7 @@ include $(TOPDIR)/include/scan-build.mk
 include $(TOPDIR)/include/fanalyzer.mk
 
 TARGETS	= $(SHIMNAME)
-TARGETS += $(SHIMNAME).debug $(MMNAME).debug $(FBNAME).debug
+TARGETS += $(SHIMNAME).debug $(FBNAME).debug
 ifneq ($(origin ENABLE_SHIM_HASH),undefined)
 TARGETS += $(SHIMHASHNAME)
 endif
@@ -108,7 +108,6 @@ else
 endif
 
 SOURCES = $(foreach source,$(ORIG_SOURCES),$(TOPDIR)/$(source)) version.c
-MOK_SOURCES = $(foreach source,$(ORIG_MOK_SOURCES),$(TOPDIR)/$(source))
 FALLBACK_SRCS = $(foreach source,$(ORIG_FALLBACK_SRCS),$(TOPDIR)/$(source))
 
 ifneq ($(origin FALLBACK_VERBOSE), undefined)
@@ -157,9 +156,8 @@ sbat_data.o : /dev/null
 	$(foreach vs,$(VENDOR_SBATS),$(call add-vendor-sbat,$(vs),$@))
 
 $(SHIMNAME) : $(SHIMSONAME) post-process-pe
-$(MMNAME) : $(MMSONAME) post-process-pe
 $(FBNAME) : $(FBSONAME) post-process-pe
-$(SHIMNAME) $(MMNAME) $(FBNAME) : | post-process-pe
+$(SHIMNAME) $(FBNAME) : | post-process-pe
 
 LIBS = Cryptlib/libcryptlib.a \
        Cryptlib/OpenSSL/libopenssl.a \
@@ -173,11 +171,6 @@ $(SHIMSONAME): $(OBJS) $(LIBS)
 fallback.o: $(FALLBACK_SRCS)
 
 $(FBSONAME): $(FALLBACK_OBJS) $(LIBS)
-	$(LD) -o $@ $(LDFLAGS) $^ $(EFI_LIBS) lib/lib.a
-
-mokmgr.o: $(MOK_SOURCES)
-
-$(MMSONAME): $(MOK_OBJS) $(LIBS)
 	$(LD) -o $@ $(LDFLAGS) $^ $(EFI_LIBS) lib/lib.a
 
 gnu-efi/$(ARCH_GNUEFI)/gnuefi/libgnuefi.a gnu-efi/$(ARCH_GNUEFI)/lib/libefi.a: CFLAGS+=-DGNU_EFI_USE_EXTERNAL_STDARG
@@ -223,7 +216,7 @@ ifeq ($(origin EFIDIR),undefined)
 endif
 
 install-deps : $(TARGETS)
-install-deps : $(SHIMNAME).debug $(MMNAME).debug $(FBNAME).debug buildid
+install-deps : $(SHIMNAME).debug $(FBNAME).debug buildid
 install-deps : $(BOOTCSVNAME)
 
 install-debugsource : install-deps
@@ -256,8 +249,6 @@ install : install-deps install-debuginfo install-debugsource
 	$(INSTALL) -m 0644 $(SHIMNAME) $(DESTDIR)/$(TARGETDIR)/
 	$(INSTALL) -m 0644 $(BOOTCSVNAME) $(DESTDIR)/$(TARGETDIR)/
 	$(INSTALL) -m 0644 $(FBNAME) $(DESTDIR)/$(EFIBOOTDIR)/
-	$(INSTALL) -m 0644 $(MMNAME) $(DESTDIR)/$(EFIBOOTDIR)/
-	$(INSTALL) -m 0644 $(MMNAME) $(DESTDIR)/$(TARGETDIR)/
 
 install-as-data : install-deps
 	$(INSTALL) -d -m 0755 $(DESTDIR)/$(DATATARGETDIR)
@@ -266,7 +257,6 @@ install-as-data : install-deps
 ifneq ($(origin ENABLE_SHIM_HASH),undefined)
 	$(INSTALL) -m 0644 $(SHIMHASHNAME) $(DESTDIR)/$(DATATARGETDIR)/
 endif
-	$(INSTALL) -m 0644 $(MMNAME) $(DESTDIR)/$(DATATARGETDIR)/$(MMNAME)
 	$(INSTALL) -m 0644 $(FBNAME) $(DESTDIR)/$(DATATARGETDIR)/$(FBNAME)
 
 %.efi: %.so
@@ -333,7 +323,7 @@ clean-lib-objs:
 	fi
 
 clean-shim-objs:
-	@rm -rvf $(TARGET) *.o $(SHIM_OBJS) $(MOK_OBJS) $(FALLBACK_OBJS) $(BOOTCSVNAME)
+	@rm -rvf $(TARGET) *.o $(SHIM_OBJS) $(FALLBACK_OBJS) $(BOOTCSVNAME)
 	@rm -vf *.debug *.so *.efi *.efi.* *.tar.* version.c buildid post-process-pe
 	@rm -vf Cryptlib/*.[oa] Cryptlib/*/*.[oa]
 	@if [ -d .git ] ; then git clean -f -d -e 'Cryptlib/OpenSSL/*'; fi
