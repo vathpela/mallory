@@ -1979,6 +1979,7 @@ efi_main (EFI_HANDLE passed_image_handle, EFI_SYSTEM_TABLE *passed_systab)
 	 * Ensure that gnu-efi functions are available
 	 */
 	InitializeLib(image_handle, systab);
+	time_since_boot();
 	setup_verbosity();
 
 	dprint(L"vendor_authorized:0x%08lx vendor_authorized_size:%lu\n",

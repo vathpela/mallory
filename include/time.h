@@ -15,6 +15,7 @@ struct timespec {
 	uint64_t tv_sec;
 	uint32_t tv_nsec;
 };
+extern struct timespec time_since_boot(void);
 
 /*
  * given a calendar year (1970-...) and month (1-13), returns how many days
