@@ -51,6 +51,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <strings.h>
+#include <inttypes.h>
 
 #ifndef SHIM_UNIT_TEST
 #include <efi.h>
