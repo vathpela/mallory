@@ -80,16 +80,19 @@ static EFI_STATUS tpm_locate_protocol(efi_tpm_protocol_t **tpm,
 
 	*tpm = NULL;
 	*tpm2 = NULL;
+	dprint(L"Locating tpm2 protocol\n");
 	efi_status = LibLocateProtocol(&EFI_TPM2_GUID, (VOID **)tpm2);
 	/* TPM 2.0 */
 	if (!EFI_ERROR(efi_status)) {
 		BOOLEAN old_caps;
 		EFI_TCG2_BOOT_SERVICE_CAPABILITY caps;
 
+		dprint(L"gettinging tpm2 capabilities\n");
 		efi_status = tpm2_get_caps(*tpm2, &caps, &old_caps);
 		if (EFI_ERROR(efi_status))
 			return efi_status;
 
+		dprint(L"checking for tpm2 presence\n");
 		if (tpm2_present(&caps, old_caps)) {
 			if (old_caps_p)
 				*old_caps_p = old_caps;
@@ -98,10 +101,12 @@ static EFI_STATUS tpm_locate_protocol(efi_tpm_protocol_t **tpm,
 			return EFI_SUCCESS;
 		}
 	} else {
+		dprint(L"Locating tpm1 protocol\n");
 		efi_status = LibLocateProtocol(&EFI_TPM_GUID, (VOID **)tpm);
 		if (EFI_ERROR(efi_status))
 			return efi_status;
 
+		dprint(L"checking for tpm1 presence\n");
 		if (tpm_present(*tpm))
 			return EFI_SUCCESS;
 	}
@@ -218,21 +223,25 @@ static EFI_STATUS tpm_log_event_raw(EFI_PHYSICAL_ADDRESS buf, UINTN size,
 			   themselves if we pass PE_COFF_IMAGE.  In case that
 			   fails we fall back to measuring without it.
 			*/
+			dprint(L"logging tpm2 event\n");
 			efi_status = tpm2->hash_log_extend_event(tpm2,
 				PE_COFF_IMAGE, buf, (UINT64) size, event);
 			if (efi_status == EFI_VOLUME_FULL) {
 				warn_first_log_full();
 				efi_status = EFI_SUCCESS;
 			}
+			dprint(L"done logging tpm2 event\n");
 		}
 
 	        if (!hash || EFI_ERROR(efi_status)) {
+			dprint(L"logging tpm2 event\n");
 			efi_status = tpm2->hash_log_extend_event(tpm2,
 				0, buf, (UINT64) size, event);
 			if (efi_status == EFI_VOLUME_FULL) {
 				warn_first_log_full();
 				efi_status = EFI_SUCCESS;
 			}
+			dprint(L"done logging tpm2 event\n");
 		}
 		FreePool(event);
 		return efi_status;
@@ -264,13 +273,16 @@ static EFI_STATUS tpm_log_event_raw(EFI_PHYSICAL_ADDRESS buf, UINTN size,
 			   hash rather than allowing the firmware to attempt
 			   to calculate it */
 			CopyMem(event->digest, hash, sizeof(event->digest));
+			dprint(L"logging tpm event\n");
 			efi_status = tpm->log_extend_event(tpm, 0, 0,
 				TPM_ALG_SHA, event, &eventnum, &lastevent);
 			if (efi_status == EFI_VOLUME_FULL) {
 				warn_first_log_full();
 				efi_status = EFI_SUCCESS;
 			}
+			dprint(L"done logging tpm event\n");
 		} else {
+			dprint(L"logging tpm event\n");
 			efi_status = tpm->log_extend_event(tpm, buf,
 				(UINT64)size, TPM_ALG_SHA, event, &eventnum,
 				&lastevent);
@@ -278,6 +290,7 @@ static EFI_STATUS tpm_log_event_raw(EFI_PHYSICAL_ADDRESS buf, UINTN size,
 				warn_first_log_full();
 				efi_status = EFI_SUCCESS;
 			}
+			dprint(L"done logging tpm event\n");
 		}
 		if (efi_status == EFI_UNSUPPORTED) {
 			perror(L"Could not write TPM event: %r. Considering "
