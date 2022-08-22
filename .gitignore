@@ -45,3 +45,7 @@ shim_cert.h
 !/test-data/
 /test-random.h
 version.c
+/.syntastic*
+/initr*.img
+/vmlinuz*
+
