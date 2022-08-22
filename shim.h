@@ -105,6 +105,7 @@
 #include "include/cc.h"
 #include "include/ucs2.h"
 #include "include/variables.h"
+#include "include/verify.h"
 #include "include/hexdump.h"
 
 #include "version.h"

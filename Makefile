@@ -67,6 +67,7 @@ OBJS = \
        shim.o \
        sbat_data.o \
        tpm.o \
+       verify.o \
        version.o
 
 ORIG_SOURCES = \
@@ -85,6 +86,7 @@ ORIG_SOURCES = \
 	       shim.c \
 	       shim.h \
 	       tpm.c \
+	       verify.c \
 	       version.h \
 	       $(wildcard include/*.h)
 
