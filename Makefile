@@ -60,6 +60,7 @@ OBJS = \
        mok.o \
        netboot.o \
        pe.o \
+       protocol_v1.o \
        replacements.o \
        sbat.o \
        sbat_data.o \
@@ -80,6 +81,7 @@ ORIG_SOURCES = \
 	       mok.c \
 	       netboot.c \
 	       pe.c \
+	       protocol_v1.c \
 	       replacements.c \
 	       sbat.c \
 	       sbat_var.S \

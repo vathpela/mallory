@@ -92,6 +92,7 @@
 #include "include/pwcrypt.h"
 #include "include/peimage.h"
 #include "include/pe.h"
+#include "include/protocol_v1.h"
 #include "include/replacements.h"
 #include "include/sbat.h"
 #include "include/sbat_var_defs.h"
