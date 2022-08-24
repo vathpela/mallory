@@ -32,23 +32,6 @@ endif
 ifneq ($(origin ENABLE_SHIM_DEVEL),undefined)
 CFLAGS += -DENABLE_SHIM_DEVEL
 endif
-ifneq ($(origin ENABLE_SHIM_CERT),undefined)
-TARGETS	+= $(MMNAME).signed $(FBNAME).signed
-CFLAGS += -DENABLE_SHIM_CERT
-else
-TARGETS += $(MMNAME) $(FBNAME)
-endif
-
-KEYS = \
-       ca.* \
-       ocsp.* \
-       shim.cer \
-       shim.crt \
-       shim.csr \
-       shim.key \
-       shim.p12 \
-       shim.pem \
-       shim_cert.h
 
 OBJS = \
        cert.o \
@@ -150,33 +133,13 @@ endif
 update :
 	git submodule update --init --recursive
 
-shim.crt:
-	$(TOPDIR)/make-certs shim shim@xn--u4h.net all codesign 1.3.6.1.4.1.311.10.3.1 </dev/null
-
-shim.cer: shim.crt
-	$(OPENSSL) x509 -outform der -in $< -out $@
-
-.NOTPARALLEL: shim_cert.h
-shim_cert.h: shim.cer
-	echo "static UINT8 shim_cert[] __attribute__((__unused__)) = {" > $@
-	$(HEXDUMP) -v -e '1/1 "0x%02x, "' $< >> $@
-	echo "};" >> $@
-
 version.c : $(TOPDIR)/version.c.in
 	sed	-e "s,@@VERSION@@,$(VERSION)," \
 		-e "s,@@UNAME@@,$(UNAME)," \
 		-e "s,@@COMMIT@@,$(COMMIT_ID)," \
 		< $< > $@
 
-certdb/secmod.db: shim.crt
-	-mkdir certdb
-	$(PK12UTIL) -d certdb/ -i shim.p12 -W "" -K ""
-	$(CERTUTIL) -d certdb/ -A -i shim.crt -n shim -t u
-
 shim.o: $(SOURCES)
-ifneq ($(origin ENABLE_SHIM_CERT),undefined)
-shim.o: shim_cert.h
-endif
 shim.o: $(wildcard $(TOPDIR)/*.h)
 
 sbat.%.csv : data/sbat.%.csv
@@ -292,15 +255,9 @@ install : install-deps install-debuginfo install-debugsource
 	$(INSTALL) -m 0644 $(SHIMNAME) $(DESTDIR)/$(EFIBOOTDIR)/$(BOOTEFINAME)
 	$(INSTALL) -m 0644 $(SHIMNAME) $(DESTDIR)/$(TARGETDIR)/
 	$(INSTALL) -m 0644 $(BOOTCSVNAME) $(DESTDIR)/$(TARGETDIR)/
-ifneq ($(origin ENABLE_SHIM_CERT),undefined)
-	$(INSTALL) -m 0644 $(FBNAME).signed $(DESTDIR)/$(EFIBOOTDIR)/$(FBNAME)
-	$(INSTALL) -m 0644 $(MMNAME).signed $(DESTDIR)/$(EFIBOOTDIR)/$(MMNAME)
-	$(INSTALL) -m 0644 $(MMNAME).signed $(DESTDIR)/$(TARGETDIR)/$(MMNAME)
-else
 	$(INSTALL) -m 0644 $(FBNAME) $(DESTDIR)/$(EFIBOOTDIR)/
 	$(INSTALL) -m 0644 $(MMNAME) $(DESTDIR)/$(EFIBOOTDIR)/
 	$(INSTALL) -m 0644 $(MMNAME) $(DESTDIR)/$(TARGETDIR)/
-endif
 
 install-as-data : install-deps
 	$(INSTALL) -d -m 0755 $(DESTDIR)/$(DATATARGETDIR)
@@ -309,13 +266,8 @@ install-as-data : install-deps
 ifneq ($(origin ENABLE_SHIM_HASH),undefined)
 	$(INSTALL) -m 0644 $(SHIMHASHNAME) $(DESTDIR)/$(DATATARGETDIR)/
 endif
-ifneq ($(origin ENABLE_SHIM_CERT),undefined)
-	$(INSTALL) -m 0644 $(MMNAME).signed $(DESTDIR)/$(DATATARGETDIR)/$(MMNAME)
-	$(INSTALL) -m 0644 $(FBNAME).signed $(DESTDIR)/$(DATATARGETDIR)/$(FBNAME)
-else
 	$(INSTALL) -m 0644 $(MMNAME) $(DESTDIR)/$(DATATARGETDIR)/$(MMNAME)
 	$(INSTALL) -m 0644 $(FBNAME) $(DESTDIR)/$(DATATARGETDIR)/$(FBNAME)
-endif
 
 %.efi: %.so
 ifneq ($(OBJCOPY_GTE224),1)
@@ -345,17 +297,6 @@ endif
 		-j .debug_line -j .debug_str -j .debug_ranges \
 		-j .note.gnu.build-id \
 		$< $@
-
-ifneq ($(origin ENABLE_SBSIGN),undefined)
-%.efi.signed: %.efi shim.key shim.crt
-	@$(SBSIGN) \
-		--key shim.key \
-		--cert shim.crt \
-		--output $@ $<
-else
-%.efi.signed: %.efi certdb/secmod.db
-	$(PESIGN) -n certdb -i $< -c "shim" -s -o $@ -f
-endif
 
 test test-clean test-coverage test-lto :
 	@make -f $(TOPDIR)/include/test.mk \
@@ -392,7 +333,7 @@ clean-lib-objs:
 	fi
 
 clean-shim-objs:
-	@rm -rvf $(TARGET) *.o $(SHIM_OBJS) $(MOK_OBJS) $(FALLBACK_OBJS) $(KEYS) certdb $(BOOTCSVNAME)
+	@rm -rvf $(TARGET) *.o $(SHIM_OBJS) $(MOK_OBJS) $(FALLBACK_OBJS) $(BOOTCSVNAME)
 	@rm -vf *.debug *.so *.efi *.efi.* *.tar.* version.c buildid post-process-pe
 	@rm -vf Cryptlib/*.[oa] Cryptlib/*/*.[oa]
 	@if [ -d .git ] ; then git clean -f -d -e 'Cryptlib/OpenSSL/*'; fi

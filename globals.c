@@ -15,11 +15,6 @@ UINT8 *vendor_deauthorized = NULL;
 UINT32 user_cert_size;
 UINT8 *user_cert;
 
-#if defined(ENABLE_SHIM_CERT)
-UINT32 build_cert_size;
-UINT8 *build_cert;
-#endif /* defined(ENABLE_SHIM_CERT) */
-
 /*
  * indicator of how an image has been verified
  */

@@ -62,17 +62,6 @@ struct mok_state_variable {
 	UINT8 **user_cert;
 	UINT32 *user_cert_size;
 
-	/*
-	 * build_cert is our build-time cert.  Like addend, this is added
-	 * to the input variable, as part of the runtime variable, so that
-	 * they're visible to the kernel.  This is the ephemeral cert used
-	 * for signing MokManager.efi and fallback.efi.
-	 *
-	 * These are indirect pointers just to make initialization saner...
-	 */
-	UINT8 **build_cert;
-	UINT32 *build_cert_size;
-
 	UINT32 yes_attr;	/* var attrs that must be set */
 	UINT32 no_attr;		/* var attrs that must not be set */
 	UINT32 flags;		/* flags on what and how to mirror */

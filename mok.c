@@ -100,10 +100,6 @@ struct mok_state_variable mok_state_variable_data[] = {
 	 .addend_size = &vendor_authorized_size,
 	 .user_cert = &user_cert,
 	 .user_cert_size = &user_cert_size,
-#if defined(ENABLE_SHIM_CERT)
-	 .build_cert = &build_cert,
-	 .build_cert_size = &build_cert_size,
-#endif /* defined(ENABLE_SHIM_CERT) */
 	 .flags = MOK_MIRROR_KEYDB |
 		  MOK_MIRROR_DELETE_FIRST |
 		  MOK_VARIABLE_LOG,
@@ -203,13 +199,6 @@ size_t n_mok_state_variables = sizeof(mok_state_variable_data) / sizeof(mok_stat
 struct mok_state_variable *mok_state_variables = &mok_state_variable_data[0];
 
 #define should_mirror_addend(v) (((v)->categorize_addend) && ((v)->categorize_addend(v) != VENDOR_ADDEND_NONE))
-
-static inline BOOLEAN NONNULL(1)
-should_mirror_build_cert(struct mok_state_variable *v)
-{
-	return (v->build_cert && v->build_cert_size &&
-		*v->build_cert && *v->build_cert_size) ? TRUE : FALSE;
-}
 
 static const uint8_t null_sha256[32] = { 0, };
 
@@ -514,7 +503,7 @@ mirror_one_mok_variable(struct mok_state_variable *v,
 			 EFI_VARIABLE_RUNTIME_ACCESS;
 	BOOLEAN measure = v->flags & MOK_VARIABLE_MEASURE;
 	BOOLEAN log = v->flags & MOK_VARIABLE_LOG;
-	size_t build_cert_esl_sz = 0, addend_esl_sz = 0;
+	size_t addend_esl_sz = 0;
 	bool reuse = FALSE;
 
 	if (v->categorize_addend)
@@ -532,10 +521,6 @@ mirror_one_mok_variable(struct mok_state_variable *v,
 		 *   existing_variable_data
 		 *   existing_variable_data_size
 		 *   if flags & MOK_MIRROR_KEYDB
-		 *     if build_cert
-		 *       build_cert_esl
-		 *       build_cert_header (always sz=0)
-		 *       build_cert_esd[0] { owner, data }
 		 *     if addend==vendor_db
 		 *       for n=[1..N]
 		 *         vendor_db_esl_n
@@ -585,24 +570,6 @@ mirror_one_mok_variable(struct mok_state_variable *v,
 			break;
 		}
 
-		/*
-		 * then the build cert if it's there
-		 */
-		if (should_mirror_build_cert(v)) {
-			efi_status = fill_esl_with_one_signature(*v->build_cert,
-								 *v->build_cert_size,
-								 &EFI_CERT_TYPE_X509_GUID,
-								 &SHIM_LOCK_GUID,
-								 NULL, &build_cert_esl_sz);
-			if (efi_status != EFI_BUFFER_TOO_SMALL) {
-				perror(L"Could not add built-in cert to %s: %r\n",
-				       v->name, efi_status);
-				return efi_status;
-			}
-			FullDataSize += build_cert_esl_sz;
-			dprint(L"FullDataSize:0x%lx FullData:0x%llx\n",
-			       FullDataSize, FullData);
-		}
 		if (v->user_cert_size)
 			FullDataSize += *v->user_cert_size;
 	}
@@ -699,25 +666,10 @@ mirror_one_mok_variable(struct mok_state_variable *v,
 		}
 
 		/*
-		 * then is the build cert
+		 * then is the user cert
 		 */
 		dprint(L"FullDataSize:%lu FullData:0x%llx p:0x%llx pos:%lld\n",
 		       FullDataSize, FullData, p, p-(uintptr_t)FullData);
-		if (should_mirror_build_cert(v)) {
-			efi_status = fill_esl_with_one_signature(*v->build_cert,
-								 *v->build_cert_size,
-								 &EFI_CERT_TYPE_X509_GUID,
-								 &SHIM_LOCK_GUID,
-								 p, &build_cert_esl_sz);
-			if (EFI_ERROR(efi_status)) {
-				perror(L"Could not add built-in cert to %s: %r\n",
-				       v->name, efi_status);
-				return efi_status;
-			}
-			p += build_cert_esl_sz;
-			dprint(L"FullDataSize:%lu FullData:0x%llx p:0x%llx pos:%lld\n",
-			       FullDataSize, FullData, p, p-(uintptr_t)FullData);
-		}
 		if (v->user_cert_size) {
 			CopyMem(p, *v->user_cert, *v->user_cert_size);
 			p += *v->user_cert_size;

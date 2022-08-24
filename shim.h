@@ -142,11 +142,6 @@ extern UINT8 *vendor_deauthorized;
 extern UINT32 user_cert_size;
 extern UINT8 *user_cert;
 
-#if defined(ENABLE_SHIM_CERT)
-extern UINT32 build_cert_size;
-extern UINT8 *build_cert;
-#endif /* defined(ENABLE_SHIM_CERT) */
-
 extern UINT8 user_insecure_mode;
 extern UINT8 ignore_db;
 extern UINT8 trust_mok_list;

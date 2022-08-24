@@ -12,9 +12,6 @@
  */
 
 #include "shim.h"
-#if defined(ENABLE_SHIM_CERT)
-#include "shim_cert.h"
-#endif /* defined(ENABLE_SHIM_CERT) */
 
 #include <openssl/err.h>
 #include <openssl/bn.h>
@@ -815,11 +812,6 @@ efi_main (EFI_HANDLE passed_image_handle, EFI_SYSTEM_TABLE *passed_systab)
 
 	vendor_deauthorized_size = cert_table.vendor_deauthorized_size;
 	vendor_deauthorized = (UINT8 *)&cert_table + cert_table.vendor_deauthorized_offset;
-
-#if defined(ENABLE_SHIM_CERT)
-	build_cert_size = sizeof(shim_cert);
-	build_cert = shim_cert;
-#endif /* defined(ENABLE_SHIM_CERT) */
 
 	CHAR16 *msgs[] = {
 		L"import_mok_state() failed",

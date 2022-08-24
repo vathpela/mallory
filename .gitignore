@@ -31,7 +31,6 @@ Make.local
 *.tar.*
 /build*/
 /.cache/
-/certdb/
 /compile_commands.json
 /cov-int/
 /post-process-pe
@@ -39,7 +38,6 @@ Make.local
 /sbat.*.csv
 /scan-results/
 [Ss]creenlog*
-shim_cert.h
 /test-*
 !/test-*.c
 !/test-data/

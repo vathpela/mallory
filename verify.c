@@ -416,33 +416,6 @@ verify_one_signature(WIN_CERTIFICATE_EFI_PKCS *sig,
 	}
 
 	efi_status = EFI_NOT_FOUND;
-#if defined(ENABLE_SHIM_CERT)
-	/*
-	 * Check against the shim build key
-	 */
-	drain_openssl_errors();
-	if (build_cert && build_cert_size) {
-		dprint("verifying against shim cert\n");
-	}
-	if (build_cert && build_cert_size &&
-	    AuthenticodeVerify(sig->CertData,
-		       sig->Hdr.dwLength - sizeof(sig->Hdr),
-		       build_cert, build_cert_size, sha256hash,
-		       SHA256_DIGEST_SIZE)) {
-		dprint(L"AuthenticodeVerify(shim_cert) succeeded\n");
-		update_verification_method(VERIFIED_BY_CERT);
-		tpm_measure_variable(L"Shim", SHIM_LOCK_GUID,
-				     build_cert_size, build_cert);
-		efi_status = EFI_SUCCESS;
-		drain_openssl_errors();
-		return efi_status;
-	} else {
-		dprint(L"AuthenticodeVerify(shim_cert) failed\n");
-		PrintErrors();
-		ClearErrors();
-		crypterr(EFI_NOT_FOUND);
-	}
-#endif /* defined(ENABLE_SHIM_CERT) */
 
 #if defined(VENDOR_CERT_FILE)
 	/*

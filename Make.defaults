@@ -16,7 +16,6 @@ INSTALL		?= install
 PK12UTIL	?= pk12util
 CERTUTIL	?= certutil
 PESIGN		?= pesign
-SBSIGN		?= sbsign
 prefix		?= /usr
 prefix		:= $(abspath $(prefix))
 datadir		?= $(prefix)/share/
