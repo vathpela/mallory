@@ -399,19 +399,6 @@ EFI_STATUS tpm_measure_variable(CHAR16 *VarName, EFI_GUID VendorGuid, UINTN VarS
 					   VarData);
 }
 
-EFI_STATUS
-fallback_should_prefer_reset(void)
-{
-	EFI_STATUS efi_status;
-	efi_tpm_protocol_t *tpm;
-	efi_tpm2_protocol_t *tpm2;
-
-	efi_status = tpm_locate_protocol(&tpm, &tpm2, NULL, NULL);
-	if (EFI_ERROR(efi_status))
-		return EFI_NOT_FOUND;
-	return EFI_SUCCESS;
-}
-
 #ifdef SHIM_UNIT_TEST
 static void DESTRUCTOR
 tpm_clean_up_measurements(void)

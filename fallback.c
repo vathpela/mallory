@@ -5,8 +5,6 @@
  */
 #include "shim.h"
 
-#define NO_REBOOT L"FB_NO_REBOOT"
-
 EFI_LOADED_IMAGE *this_image = NULL;
 
 int
@@ -1056,108 +1054,10 @@ try_start_first_option(EFI_HANDLE parent_image_handle)
 	return efi_status;
 }
 
-static UINT32
-get_fallback_no_reboot(void)
-{
-	EFI_STATUS efi_status;
-	UINT32 no_reboot;
-	UINTN size = sizeof(UINT32);
-
-	efi_status = RT->GetVariable(NO_REBOOT, &SHIM_LOCK_GUID,
-				     NULL, &size, &no_reboot);
-	if (!EFI_ERROR(efi_status)) {
-		return no_reboot;
-	}
-	return 0;
-}
-
-#ifndef FALLBACK_NONINTERACTIVE
-static EFI_STATUS
-set_fallback_no_reboot(void)
-{
-	EFI_STATUS efi_status;
-	UINT32 no_reboot = 1;
-	efi_status = RT->SetVariable(NO_REBOOT, &SHIM_LOCK_GUID,
-				     EFI_VARIABLE_NON_VOLATILE |
-				     EFI_VARIABLE_BOOTSERVICE_ACCESS |
-				     EFI_VARIABLE_RUNTIME_ACCESS,
-				     sizeof(UINT32), &no_reboot);
-	return efi_status;
-}
-
-static int
-draw_countdown(void)
-{
-	CHAR16 *title = L"Boot Option Restoration";
-	CHAR16 *message = L"Press any key to stop system reset";
-	int timeout;
-
-	timeout = console_countdown(title, message, 5);
-
-	return timeout;
-}
-
-static int
-get_user_choice(void)
-{
-	int choice;
-	CHAR16 *title[] = {L"Boot Option Restored", NULL};
-	CHAR16 *menu_strings[] = {
-		L"Reset system",
-		L"Continue boot",
-		L"Always continue boot",
-		NULL
-	};
-
-	do {
-		choice = console_select(title, menu_strings, 0);
-	} while (choice < 0 || choice > 2);
-
-	return choice;
-}
-#endif
-
-extern EFI_STATUS
-efi_main(EFI_HANDLE image, EFI_SYSTEM_TABLE *systab);
-
-static void
-__attribute__((__optimize__("0")))
-debug_hook(void)
-{
-	UINT8 *data = NULL;
-	UINTN dataSize = 0;
-	EFI_STATUS efi_status;
-	register volatile int x = 0;
-	extern char _etext, _edata;
-
-	efi_status = get_variable(DEBUG_VAR_NAME, &data, &dataSize,
-				  SHIM_LOCK_GUID);
-	if (EFI_ERROR(efi_status)) {
-		return;
-	}
-
-	if (data)
-		FreePool(data);
-	if (x)
-		return;
-
-	x = 1;
-	console_print(L"add-symbol-file "DEBUGDIR
-		      L"fb" EFI_ARCH L".efi.debug %p -s .data %p\n",
-		      &_etext, &_edata);
-}
-
 EFI_STATUS
-efi_main(EFI_HANDLE image, EFI_SYSTEM_TABLE *systab)
+fallback(EFI_HANDLE image)
 {
 	EFI_STATUS efi_status;
-
-	InitializeLib(image, systab);
-
-	/*
-	 * if SHIM_DEBUG is set, wait for a debugger to attach.
-	 */
-	debug_hook();
 
 	efi_status = BS->HandleProtocol(image, &LoadedImageProtocol,
 					(void *) &this_image);
@@ -1178,35 +1078,8 @@ efi_main(EFI_HANDLE image, EFI_SYSTEM_TABLE *systab)
 		return efi_status;
 	}
 
-	efi_status = fallback_should_prefer_reset();
-	if (EFI_ERROR(efi_status)) {
-		VerbosePrint(L"tpm not present, starting the first image\n");
-		try_start_first_option(image);
-	} else {
-		if (get_fallback_no_reboot() == 1) {
-			VerbosePrint(L"NO_REBOOT is set, starting the first image\n");
-			try_start_first_option(image);
-		}
-
-#ifndef FALLBACK_NONINTERACTIVE
-		int timeout = draw_countdown();
-		if (timeout == 0)
-			goto reset;
-
-		int choice = get_user_choice();
-		if (choice == 0) {
-			goto reset;
-		} else if (choice == 2) {
-			efi_status = set_fallback_no_reboot();
-			if (EFI_ERROR(efi_status))
-				goto reset;
-		}
-		VerbosePrint(L"tpm present, starting the first image\n");
-		try_start_first_option(image);
-reset:
-#endif
-		VerbosePrint(L"tpm present, resetting system\n");
-	}
+	VerbosePrint(L"starting the first image\n");
+	try_start_first_option(image);
 
 	console_print(L"Reset System\n");
 

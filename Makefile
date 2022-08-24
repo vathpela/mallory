@@ -38,6 +38,7 @@ OBJS = \
        cert.o \
        csv.o \
        errlog.o \
+       fallback.o \
        globals.o \
        httpboot.o \
        load-options.o \
@@ -62,6 +63,7 @@ ORIG_SOURCES = \
 	       cert.S \
 	       csv.c \
 	       errlog.c \
+	       fallback.c \
 	       globals.c \
 	       httpboot.c \
 	       load-options.c \
@@ -80,15 +82,6 @@ ORIG_SOURCES = \
 	       verify.c \
 	       version.h \
 	       $(wildcard include/*.h)
-
-FALLBACK_OBJS = \
-		fallback.o \
-		errlog.o \
-		globals.o \
-		sbat_data.o \
-		tpm.o
-
-ORIG_FALLBACK_SRCS = fallback.c
 
 SBATPATH = $(TOPDIR)/data/sbat.csv
 

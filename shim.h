@@ -81,6 +81,7 @@
 #include "include/efiauthenticated.h"
 #include "include/errors.h"
 #include "include/execute.h"
+#include "include/fallback.h"
 #include "include/guid.h"
 #include "include/http.h"
 #include "include/httpboot.h"
