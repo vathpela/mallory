@@ -446,9 +446,9 @@ EFI_STATUS init_grub(EFI_HANDLE image_handle)
 	efi_status = start_image(image_handle, use_fb ? FALLBACK :second_stage);
 	if (efi_status == EFI_SECURITY_VIOLATION ||
 	    efi_status == EFI_ACCESS_DENIED) {
-		efi_status = start_image(image_handle, MOK_MANAGER);
+		efi_status = mok_manager();
 		if (EFI_ERROR(efi_status)) {
-			console_print(L"start_image() returned %r\n", efi_status);
+			console_print(L"mok_manager returned %r\n", efi_status);
 			msleep(2000000);
 			return efi_status;
 		}

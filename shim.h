@@ -88,6 +88,7 @@
 #include "include/ip6config.h"
 #include "include/load-options.h"
 #include "include/mok.h"
+#include "include/mokmgr.h"
 #include "include/netboot.h"
 #include "include/pwcrypt.h"
 #include "include/peimage.h"

@@ -34,6 +34,7 @@ CFLAGS += -DENABLE_SHIM_DEVEL
 endif
 
 OBJS = \
+       blowfish.o \
        cert.o \
        csv.o \
        errlog.o \
@@ -41,9 +42,11 @@ OBJS = \
        httpboot.o \
        load-options.o \
        mok.o \
+       mokmgr.o \
        netboot.o \
        pe.o \
        protocol_v1.o \
+       pwcrypt.o \
        replacements.o \
        sbat.o \
        sbat_data.o \
@@ -55,6 +58,7 @@ OBJS = \
        version.o
 
 ORIG_SOURCES = \
+	       blowfish.c \
 	       cert.S \
 	       csv.c \
 	       errlog.c \
@@ -62,9 +66,11 @@ ORIG_SOURCES = \
 	       httpboot.c \
 	       load-options.c \
 	       mok.c \
+	       mokmgr.c \
 	       netboot.c \
 	       pe.c \
 	       protocol_v1.c \
+	       pwcrypt.c \
 	       replacements.c \
 	       sbat.c \
 	       sbat_var.S \
@@ -74,21 +80,6 @@ ORIG_SOURCES = \
 	       verify.c \
 	       version.h \
 	       $(wildcard include/*.h)
-
-MOK_OBJS = \
-	   blowfish.o \
-	   errlog.o \
-	   globals.o \
-	   mokmgr.o \
-	   pwcrypt.o \
-	   sbat_data.o
-
-ORIG_MOK_SOURCES = \
-		   blowfish.c \
-		   mokmgr.c \
-		   pwcrypt.c \
-		   shim.h \
-		   $(wildcard include/*.h)
 
 FALLBACK_OBJS = \
 		fallback.o \

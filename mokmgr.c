@@ -2209,8 +2209,7 @@ static void free_menu(mok_menu_item * menu_item, CHAR16 ** menu_strings)
 		FreePool(menu_item);
 }
 
-static EFI_STATUS enter_mok_menu(EFI_HANDLE image_handle UNUSED,
-				 void *MokNew, UINTN MokNewSize,
+static EFI_STATUS enter_mok_menu(void *MokNew, UINTN MokNewSize,
 				 void *MokDel, UINTN MokDelSize,
 				 void *MokSB, UINTN MokSBSize,
 				 void *MokPW, UINTN MokPWSize,
@@ -2515,7 +2514,7 @@ out:
 	return ret;
 }
 
-static EFI_STATUS check_mok_request(EFI_HANDLE image_handle)
+static EFI_STATUS check_mok_request(void)
 {
 	UINTN MokNewSize = 0, MokDelSize = 0, MokSBSize = 0, MokPWSize = 0;
 	UINTN MokDBSize = 0, MokXNewSize = 0, MokXDelSize = 0, MokTMLSize = 0;
@@ -2611,7 +2610,7 @@ static EFI_STATUS check_mok_request(EFI_HANDLE image_handle)
 		console_error(L"Could not retrieve MokXDel", efi_status);
 	}
 
-	enter_mok_menu(image_handle, MokNew, MokNewSize, MokDel, MokDelSize,
+	enter_mok_menu(MokNew, MokNewSize, MokDel, MokDelSize,
 		       MokSB, MokSBSize, MokPW, MokPWSize, MokDB, MokDBSize,
 		       MokXNew, MokXNewSize, MokXDel, MokXDelSize, MokTML, MokTMLSize);
 
@@ -2670,18 +2669,20 @@ static EFI_STATUS setup_rand(void)
 	return EFI_SUCCESS;
 }
 
-EFI_STATUS efi_main(EFI_HANDLE image_handle, EFI_SYSTEM_TABLE * systab)
+EFI_STATUS
+mok_manager(void)
 {
 	EFI_STATUS efi_status;
+	static bool once = true;
 
-	InitializeLib(image_handle, systab);
-
-	setup_verbosity();
-	setup_rand();
+	if (once) {
+		once = false;
+		setup_rand();
+	}
 
 	console_mode_handle();
 
-	efi_status = check_mok_request(image_handle);
+	efi_status = check_mok_request();
 
 	console_fini();
 	return efi_status;
