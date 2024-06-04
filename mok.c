@@ -50,6 +50,7 @@ static EFI_STATUS check_mok_request(EFI_HANDLE image_handle)
 		efi_status = start_image(image_handle, MOK_MANAGER);
 
 		if (EFI_ERROR(efi_status)) {
+#ifndef SHIM_UNIT_TEST
 			EFI_STATUS efi_status_2;
 			EFI_LOADED_IMAGE *li;
 			efi_status_2 = BS->HandleProtocol(image_handle, &EFI_LOADED_IMAGE_GUID,
@@ -70,6 +71,7 @@ static EFI_STATUS check_mok_request(EFI_HANDLE image_handle)
 				console_countdown(title, message, 10);
 				RT->ResetSystem(EfiResetWarm, EFI_SUCCESS, 0, NULL);
 			}
+#endif
 			perror(L"Failed to start MokManager: %r\n", efi_status);
 			return efi_status;
 		}
