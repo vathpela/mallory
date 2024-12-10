@@ -36,7 +36,6 @@ unhook_system_services(void)
 	BS = systab->BootServices;
 }
 
-/* Reviewers: Is this better than a bunch of double pointers? */
 typedef struct {
 	EFI_HANDLE hnd;
 	EFI_DEVICE_PATH *dp;
@@ -133,9 +132,11 @@ try_load_from_lf2(EFI_DEVICE_PATH *dp, buffer_properties_t *bprop)
 	/* get file size */
 	bprop->size = 0; /* this shouldn't be read when Buffer=NULL but better be safe */
 	status = lf2->LoadFile(lf2, bprop->dp, /*BootPolicy=*/false, &bprop->size, NULL);
-	/* NOTE: the spec is somewhat ambiguous what is the correct return status code
-	   when asking for the buffer size with Buffer=NULL. I am assuming EFI_SUCCESS
-	   and EFI_BUFFER_TOO_SMALL are the only reasonable interpretations. */
+	/*
+	 * NOTE: the spec is somewhat ambiguous what is the correct return status code
+	 * when asking for the buffer size with Buffer=NULL. I am assuming EFI_SUCCESS
+	 * and EFI_BUFFER_TOO_SMALL are the only reasonable interpretations.
+	 */
 	if (EFI_ERROR(status) && status != EFI_BUFFER_TOO_SMALL) {
 		status = EFI_LOAD_ERROR;
 		goto out;
@@ -184,8 +185,10 @@ shim_load_image(BOOLEAN BootPolicy, EFI_HANDLE ParentImageHandle,
 		SourceSize = bprop.size;
 	} else {
 		bprop.buffer = NULL;
-		/* even if we are using a buffer, try populating the
-		 * device_handle and file_path fields the best we can */
+		/*
+		 * even if we are using a buffer, try populating the
+		 * device_handle and file_path fields the best we can
+		 */
 		bprop.dp = FilePath;
 		efi_status = BS->LocateDevicePath(&EFI_DEVICE_PATH_GUID,
 		                                  &bprop.dp,
