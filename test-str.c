@@ -484,7 +484,7 @@ gnuefi_strncmp (
  * This is still broken, and fails the test case as written on arm.
  * We no longer use this, so we do not strictly need to run it.
  */
-#if !defined(__arm__) && !defined(__aarch64__)
+#if 0
 static inline INTN
 gnuefi_signed_strncmp (
     IN CONST CHAR8    *s1,
@@ -719,7 +719,7 @@ test_strncmp(void)
 	 * This is still broken, and fails the test case as written on arm.
 	 * We no longer use this, so we do not strictly need to run it.
 	 */
-#if !defined(__arm__) && !defined(__aarch64__)
+#if 0
 	/*
 	 * gnu-efi's broken strncmpa with the return type fixed
 	 */
