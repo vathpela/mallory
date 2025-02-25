@@ -120,6 +120,84 @@ vhexdumpf(const char *file, int line, const char *func, const CHAR16 *const fmt,
 }
 
 /*
+ * variadic hexdump formatted
+ * think of it as: printf("%s%s\n", vformat(fmt, ap), hexdump(data,size));
+ */
+static inline void UNUSED EFIAPI
+console_vhexdumpf(const char *file, int line, const char *func,
+#if 0
+		  const CHAR16 *const fmt,
+#endif
+          const void *data, unsigned long size, size_t at
+#if 0
+	  , ms_va_list ap
+#endif
+	  )
+{
+	unsigned long display_offset = at;
+	unsigned long offset = 0;
+
+	if (verbose == 0)
+		return;
+
+	if (!data) {
+		console_print(L"hexdump of a NULL pointer!\n");
+		return;
+	}
+	if (!size) {
+		console_print(L"hexdump of a 0 size region!\n");
+		return;
+	}
+
+	while (offset < size) {
+		char hexbuf[49];
+		char txtbuf[19];
+		unsigned long sz;
+
+		sz = prepare_hex(data+offset, size-offset, hexbuf,
+				 (unsigned long)data+offset);
+		if (sz == 0)
+			return;
+
+		prepare_text(data+offset, size-offset, txtbuf,
+			     (unsigned long)data+offset);
+#if 0
+		if (fmt && fmt[0] != 0)
+			vdprint_(fmt, file, line, func, ap);
+#endif
+		console_print(L"%a:%d:%a() %08lx  %a  %a\n", file, line, func, display_offset, hexbuf, txtbuf);
+
+		display_offset += sz;
+		offset += sz;
+	}
+}
+
+/*
+ * console hexdump formatted
+ * think of it as: printf("%s%s", format(fmt, ...), hexdump(data,size)[lineN]);
+ */
+static inline void UNUSED EFIAPI
+console_hexdumpf(const char *file, int line, const char *func,
+#if 0
+		 const CHAR16 *const fmt,
+#endif
+         const void *data, unsigned long size, size_t at, ...)
+{
+	ms_va_list ap;
+
+	ms_va_start(ap, at);
+	console_vhexdumpf(file, line, func, data, size, at);
+	ms_va_end(ap);
+}
+
+static inline void UNUSED
+console_hexdump(const char *file, int line, const char *func, const void *data, unsigned long size)
+{
+	console_hexdumpf(file, line, func, data, size, (intptr_t)data);
+}
+
+
+/*
  * hexdump formatted
  * think of it as: printf("%s%s", format(fmt, ...), hexdump(data,size)[lineN]);
  */
@@ -151,6 +229,7 @@ hexdumpat(const char *file, int line, const char *func, const void *data, unsign
 #define dhexdump(data, ...)
 #define dhexdumpat(data, ...)
 #define dhexdumpf(fmt, ...)
+#define chexdump(data, ...)
 #else
 #define LogHexdump(data, sz) LogHexdump_(__FILE__, __LINE__, __func__, data, sz)
 #define dhexdump(data, sz)   hexdump(__FILE__, __LINE__, __func__, data, sz)
@@ -158,6 +237,7 @@ hexdumpat(const char *file, int line, const char *func, const void *data, unsign
 	hexdumpat(__FILE__, __LINE__ - 1, __func__, data, sz, at)
 #define dhexdumpf(fmt, data, sz, at, ...) \
 	hexdumpf(__FILE__, __LINE__ - 1, __func__, fmt, data, sz, at, ##__VA_ARGS__)
+#define chexdump(data, sz)   console_hexdump(__FILE__, __LINE__, __func__, data, sz)
 #endif
 
 #endif /* STATIC_HEXDUMP_H */
