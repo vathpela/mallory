@@ -199,6 +199,18 @@ dxe_update_mem_attrs(uintptr_t addr, size_t size,
 		mod_size = MIN(end, next) - mod_start;
 
 		before = uefi_mem_attrs_to_shim_mem_attrs(desc.Attributes);
+
+		if (((before & ~clear_attrs) | set_attrs) == before) {
+			dprint(L"Skipping update from %a%a%a to %a%a%a\n",
+			       (before & MEM_ATTR_R) ? 'r' : '-',
+			       (before & MEM_ATTR_W) ? 'w' : '-',
+			       (before & MEM_ATTR_X) ? 'x' : '-',
+			       (before & MEM_ATTR_R) ? 'r' : '-',
+			       (before & MEM_ATTR_W) ? 'w' : '-',
+			       (before & MEM_ATTR_X) ? 'x' : '-');
+			return EFI_SUCCESS;
+		}
+
 		dxe_set_attrs = shim_mem_attrs_to_uefi_mem_attrs(set_attrs);
 		dprint("translating set_attrs from 0x%lx to 0x%lx\n", set_attrs, dxe_set_attrs);
 		dxe_clear_attrs = shim_mem_attrs_to_uefi_mem_attrs(clear_attrs);
@@ -323,6 +335,21 @@ efi_update_mem_attrs(uintptr_t addr, uint64_t size,
 			perror(L" size is 0\n");
 		return EFI_SUCCESS;
 	}
+
+	dprint(L"before:0x%llx ((before & ~clear_attrs) | set_attrs):0x%llx\n",
+	       before, ((before & ~clear_attrs) | set_attrs));
+#if 0
+	if (((before & ~clear_attrs) | set_attrs) == before) {
+		dprint(L"Skipping update from %a%a%a to %a%a%a\n",
+		       (before & MEM_ATTR_R) ? 'r' : '-',
+		       (before & MEM_ATTR_W) ? 'w' : '-',
+		       (before & MEM_ATTR_X) ? 'x' : '-',
+		       (before & MEM_ATTR_R) ? 'r' : '-',
+		       (before & MEM_ATTR_W) ? 'w' : '-',
+		       (before & MEM_ATTR_X) ? 'x' : '-');
+		return EFI_SUCCESS;
+	}
+#endif
 
 	uefi_set_attrs = shim_mem_attrs_to_uefi_mem_attrs (set_attrs);
 	dprint("translating set_attrs from 0x%lx to 0x%lx\n", set_attrs, uefi_set_attrs);
