@@ -218,6 +218,8 @@ save_logs(void)
 		return;
 	}
 
+	console_print(L"dbglog_sz:%llu errlog_sz:%llu\n", dbglog_sz, errlog_sz);
+
 	for (UINTN i = 0; i < ST->NumberOfTableEntries; i++) {
 		EFI_CONFIGURATION_TABLE *CT;
 		CT = &ST->ConfigurationTable[i];
@@ -241,12 +243,28 @@ save_logs(void)
 		}
 	}
 
+	console_print(L"old table (0x%llx) beginning:\n", cfg_table);
+	chexdump(cfg_table, sizeof(*entry)+32);
+
+	console_print(L"old table (0x%llx-0x%llx) (%llu bytes)  end:\n",
+		      cfg_table, (uintptr_t)cfg_table + pos + sizeof(*entry),
+		      pos + sizeof(*entry));
+	chexdump((void *)((uintptr_t)cfg_table + pos - sizeof(*entry)), 2 * sizeof(*entry));
+
 	new_table_sz = pos +
 		(errlog_sz ? sizeof(*entry) + errlog_sz : 0) +
 		(dbglog_sz ? sizeof(*entry) + dbglog_sz : 0) +
 		sizeof(*entry);
+	console_print(L"new_table_sz = %llu + %llu + %llu + %llu = %llu\n", pos,
+		      (errlog_sz ? sizeof(*entry) + errlog_sz : 0),
+		      (dbglog_sz ? sizeof(*entry) + dbglog_sz : 0),
+		      sizeof(*entry));
+
 	new_table = NULL;
 	new_table_pages = ALIGN_UP(new_table_sz + 4*EFI_PAGE_SIZE, EFI_PAGE_SIZE) / EFI_PAGE_SIZE;
+	console_print(L"allocating %llu bytes (really %llu) as %llu pages\n", new_table_sz + 4*EFI_PAGE_SIZE,
+		      new_table_pages * EFI_PAGE_SIZE,
+		      new_table_pages);
 	efi_status = BS->AllocatePages(AllocateAnyPages, EfiRuntimeServicesData, new_table_pages, &physaddr);
 	if (EFI_ERROR(efi_status)) {
 		perror(L"Couldn't allocate %llu pages\n", new_table_pages);
@@ -258,7 +276,14 @@ save_logs(void)
 	ZeroMem(new_table, new_table_pages * EFI_PAGE_SIZE);
 	CopyMem(new_table, cfg_table, pos);
 
+	console_print(L"new table (0x%llx) beginning:\n", new_table);
+	chexdump(new_table, sizeof(*entry)+32);
+	console_print(L"new table (0x%llx) end after copy:\n", new_table);
+	chexdump((void *)((uintptr_t)new_table + pos - sizeof(*entry)), 2*sizeof(*entry));
+
 	entry = (struct mok_variable_config_entry *)((uintptr_t)new_table + pos);
+	console_print(L"new entry:0x%llx\n", entry);
+#if 0
 	if (errlog_sz) {
 		strcpy(entry->name, "shim-err.txt");
 		entry->data_size = errlog_sz;
@@ -267,17 +292,37 @@ save_logs(void)
 		pos += sizeof(*entry) + errlog_sz;
 		entry = (struct mok_variable_config_entry *)((uintptr_t)new_table + pos);
 	}
+#endif
 	if (dbglog_sz) {
 		strcpy(entry->name, "shim-dbg.txt");
+#if 0
 		entry->data_size = dbglog_sz;
 		format_debug_log(&entry->data[0], dbglog_sz);
+#elif 1
+		entry->data_size = 0x35000; /* good:217088 bad:979680 */
+#else
+		entry->data_size = EFI_PAGE_SIZE;
+#endif
+
+		console_print(L"new table (0x%llx) end after append (same as last range):\n", new_table);
+		chexdump((void *)((uintptr_t)new_table + pos - sizeof(*entry)), 2*sizeof(*entry));
 
 		pos += sizeof(*entry) + dbglog_sz;
 
+
 		entry = (struct mok_variable_config_entry *)((uintptr_t)new_table + pos);
+		console_print(L"new final entry after append from end of new entry: 0x%llx\n", (uintptr_t)entry);
+		chexdump((void *)((uintptr_t)entry + sizeof(*entry) + entry->data_size - 2*sizeof(*entry)), 2*sizeof(*entry));
 	}
 
 	replace_config_table((EFI_CONFIGURATION_TABLE *)cfg_table, physaddr, new_table_pages);
+
+	console_print(L"new_table:0x%llx new_table_sz:0x%llx\n", new_table, new_table_sz);
+	console_print(L"0x%llx-0x%llx:\n", (uintptr_t)new_table, (uintptr_t)new_table + 16*EFI_PAGE_SIZE);
+	chexdump(new_table, 16*EFI_PAGE_SIZE);
+	console_print(L"0x%llx-0x%llx\n", (uintptr_t)new_table + new_table_sz - sizeof(*entry) - 16,
+		      sizeof(*entry) + 16);
+	chexdump((void *)((uintptr_t)new_table + new_table_sz - sizeof(*entry) - 16), sizeof(*entry) + 16);
 }
 
 // vim:fenc=utf-8:tw=75
