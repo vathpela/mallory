@@ -38,14 +38,82 @@ CFLAGS += -DENABLE_SHIM_CERT
 else
 TARGETS += $(MMNAME) $(FBNAME)
 endif
-OBJS	= shim.o globals.o memattrs.o mok.o netboot.o cert.o dp.o loader-proto.o tpm.o version.o errlog.o sbat.o sbat_data.o sbat_var.o pe.o pe-relocate.o httpboot.o csv.o load-options.o utils.o
-KEYS	= shim_cert.h ocsp.* ca.* shim.crt shim.csr shim.p12 shim.pem shim.key shim.cer
-ORIG_SOURCES	= shim.c globals.c memattrs.c mok.c netboot.c dp.c loader-proto.c tpm.c errlog.c sbat.c pe.c pe-relocate.c httpboot.c shim.h version.h $(wildcard include/*.h) cert.S sbat_var.S
-MOK_OBJS = MokManager.o PasswordCrypt.o crypt_blowfish.o errlog.o sbat_data.o globals.o dp.o
-ORIG_MOK_SOURCES = MokManager.c PasswordCrypt.c crypt_blowfish.c shim.h $(wildcard include/*.h)
-FALLBACK_OBJS = fallback.o tpm.o errlog.o sbat_data.o globals.o utils.o
-ORIG_FALLBACK_SRCS = fallback.c
+
+OBJS = \
+       cert.o \
+       csv.o \
+       dp.o \
+       errlog.o \
+       globals.o \
+       httpboot.o \
+       load-options.o \
+       loader-proto.o \
+       memattrs.o \
+       mok.o \
+       netboot.o \
+       pe.o \
+       pe-relocate.o \
+       sbat.o \
+       sbat_data.o \
+       sbat_var.o \
+       shim.o \
+       tpm.o \
+       utils.o \
+       version.o
+
+ORIG_SOURCES = \
+	       cert.S \
+	       csv.c \
+	       dp.c \
+	       errlog.c \
+	       globals.c \
+	       httpboot.c \
+	       load-options.c \
+	       loader-proto.c \
+	       memattrs.c \
+	       mok.c \
+	       netboot.c \
+	       pe.c \
+	       pe-relocate.c \
+	       sbat.c \
+	       sbat_var.S \
+	       shim.c \
+	       shim.h \
+	       tpm.c \
+	       utils.c \
+	       version.h \
+	       $(wildcard include/*.h)
+
+MOK_OBJS = \
+	   crypt_blowfish.o \
+	   dp.o \
+	   globals.o \
+	   errlog.o \
+	   MokManager.o \
+	   PasswordCrypt.o \
+	   sbat_data.o
+
+ORIG_MOK_SOURCES = \
+		   crypt_blowfish.c \
+		   MokManager.c \
+		   PasswordCrypt.c \
+		   shim.h \
+		   $(wildcard include/*.h)
+
+FALLBACK_OBJS = \
+		errlog.o \
+		fallback.o \
+		globals.o \
+		sbat_data.o \
+		tpm.o \
+		utils.o
+
+ORIG_FALLBACK_SRCS = \
+		     fallback.c
+
 SBATPATH = $(TOPDIR)/data/sbat.csv
+
+KEYS	= shim_cert.h ocsp.* ca.* shim.crt shim.csr shim.p12 shim.pem shim.key shim.cer
 
 ifeq ($(SOURCE_DATE_EPOCH),)
 	UNAME=$(shell uname -s -m -p -i -o)
