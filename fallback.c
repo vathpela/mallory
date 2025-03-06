@@ -1062,47 +1062,24 @@ get_user_choice(void)
 }
 #endif
 
-extern EFI_STATUS
-efi_main(EFI_HANDLE image, EFI_SYSTEM_TABLE *systab);
-
-static void
-__attribute__((__optimize__("0")))
-debug_hook(void)
-{
-	UINT8 *data = NULL;
-	UINTN dataSize = 0;
-	EFI_STATUS efi_status;
-	register volatile int x = 0;
-	extern char _etext, _edata;
-
-	efi_status = get_variable(DEBUG_VAR_NAME, &data, &dataSize,
-				  SHIM_LOCK_GUID);
-	if (EFI_ERROR(efi_status)) {
-		return;
-	}
-
-	if (data)
-		FreePool(data);
-	if (x)
-		return;
-
-	x = 1;
-	console_print(L"add-symbol-file "DEBUGDIR
-		      L"fb" EFI_ARCH L".efi.debug %p -s .data %p\n",
-		      &_etext, &_edata);
-}
-
 EFI_STATUS
 efi_main(EFI_HANDLE image, EFI_SYSTEM_TABLE *systab)
 {
 	EFI_STATUS efi_status;
+	extern char _text, _data;
 
 	InitializeLib(image, systab);
+	struct scn scns[] = {
+		{".text", (uintptr_t)&_text},
+		{".data", (uintptr_t)&_data},
+		{"", 0 }
+	};
 
 	/*
 	 * if SHIM_DEBUG is set, wait for a debugger to attach.
 	 */
-	debug_hook();
+	debug_hook(DEBUG_VAR_NAME, SHIM_LOCK_GUID,
+		   DEBUGDIR L"FB" EFI_ARCH L".efi.debug", scns);
 
 	efi_status = BS->HandleProtocol(image, &LoadedImageProtocol,
 					(void *) &this_image);

@@ -164,6 +164,7 @@
 #include "include/configtable.h"
 #include "include/console.h"
 #include "include/crypt_blowfish.h"
+#include "include/debug.h"
 #include "include/dp.h"
 #include "include/efiauthenticated.h"
 #include "include/errlog.h"

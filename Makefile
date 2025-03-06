@@ -42,6 +42,7 @@ endif
 OBJS = \
        cert.o \
        csv.o \
+       debug.o \
        dp.o \
        errlog.o \
        globals.o \
@@ -64,6 +65,7 @@ OBJS = \
 ORIG_SOURCES = \
 	       cert.S \
 	       csv.c \
+	       debug.c \
 	       dp.c \
 	       errlog.c \
 	       globals.c \
@@ -101,6 +103,7 @@ ORIG_MOK_SOURCES = \
 		   $(wildcard include/*.h)
 
 FALLBACK_OBJS = \
+		debug.o \
 		errlog.o \
 		fallback.o \
 		globals.o \
