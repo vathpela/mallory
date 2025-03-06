@@ -479,6 +479,13 @@ handle_image (void *data, unsigned int datasize,
 	UINT8 sha1hash[SHA1_DIGEST_SIZE];
 	UINT8 sha256hash[SHA256_DIGEST_SIZE];
 
+	struct scn scns[] = {
+		{".text", 0},
+		{".data", 0},
+		{".rodata", 0},
+		{"", 0 }
+	};
+
 	/*
 	 * The binary header contains relevant context and section pointers
 	 */
@@ -705,6 +712,14 @@ handle_image (void *data, unsigned int datasize,
 			if (size < Section->Misc.VirtualSize)
 				ZeroMem(base + size, Section->Misc.VirtualSize - size);
 		}
+
+		if (CompareMem(Section->Name, ".text\0\0\0", 8) == 0) {
+			scns[0].addr = (uintptr_t)base;
+		} else if (CompareMem(Section->Name, ".data\0\0\0", 8) == 0) {
+			scns[1].addr = (uintptr_t)base;
+		} else if (CompareMem(Section->Name, ".rodata\0", 8) == 0) {
+			scns[2].addr = (uintptr_t)base;
+		}
 	}
 
 	if (context.NumberOfRvaAndSizes <= EFI_IMAGE_DIRECTORY_ENTRY_BASERELOC) {
@@ -796,6 +811,9 @@ handle_image (void *data, unsigned int datasize,
 		BS->FreePages(*alloc_address, *alloc_pages);
 		return EFI_UNSUPPORTED;
 	}
+
+	if (in_protocol)
+		debug_hook(L"SHIM_LOADER_PROTOCOL_DEVEL_DEBUG", SHIM_LOCK_GUID, L"target.bin", scns);
 
 	return EFI_SUCCESS;
 }
