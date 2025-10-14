@@ -17,6 +17,15 @@ SECTIONS
   _text_vsize = _evtext - _text;
 
   . = ALIGN(4096);
+  .data.ident : {
+    *(.data.ident)
+  }
+  . = ALIGN(4096);
+  .sbatlevel : {
+    *(.sbatlevel)
+  }
+
+  . = ALIGN(4096);
   .data :
   {
    _data = .;
