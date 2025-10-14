@@ -82,6 +82,36 @@ It will sometimes be requested by reviewers that a build includes extra
 name sbat.FOO.csv, where foo is your EFI subdirectory name.  The build
 system will automatically include any such files.
 
+Software Bill of Materials (SBOM):
+If there's a file named "sbom.uswid" in data/ during the build, it will be
+included as the ".sbom" section in all efi binaries created.
+
+You can make such a file by modifying the sample file in
+data/sbom.cdx.json.in and replacing all the @@VARIABLE@@ variables with
+meaningful values for your build, then using the resulting sbom.cdx.json
+with python-uswid (https://github.com/hughsie/python-uswid) to create
+sbom.uswid as such:
+
+  $ sed -e 's,@@PROJECT@@,The Fedora Project,g' \
+        -e 's,@@SHIM_VERSION@@,16.1,g' \
+        -e 's,@@URL@@,https://fedoraproject.org,g' \
+        -e 's,@@PRODUCT@@,Fedora Linux,g' \
+        -e 's,@@SHIM_RELEASE@@,1,g' \
+        < data/sbom.cdx.json.in > data/sbom.cdx.json
+  $ uswid --load data/sbom.cdx.json --save data/sbom.uswid
+
+You can verify the output of the build using objcopy and the python-uswid
+package like so:
+
+  $ objcopy --only-section .sbom -O binary shimx64.efi sbom.uswid
+  $ uswid --load sbom.uswid --validate
+  Validation problems:
+  e383014a-b45e-4d06-a849-15685ad92f69 component: No version scheme (uSWID >= v0.4.7)
+  $
+
+(You should probably make sure there are no validation problems, this
+was just to illustrate it doing something.)
+
 Building and booting local VM to test shim changes with other 2nd/3rd stages:
 - pick the target distribution of your choice, currently supported are Fedora/CentOS/Debian/Ubuntu
 - ensure the package manager for the target distribution is installed locally - dnf+rpm or apt+dpkg

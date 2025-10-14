@@ -1,0 +1,60 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:328b9b37-5906-412e-9685-9bfdda3dbc1d",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-10-14T20:42:58.679106+00:00",
+    "tools": [
+      {
+        "vendor": "uSWID Authors",
+        "name": "uSWID",
+        "version": "0.4.0"
+      }
+    ],
+    "authors": [
+      {
+        "name": "Authors of the UEFI shim loader https://github.com/rhboot/shim"
+      }
+    ],
+    "lifecycles": {
+      "phase": "pre-build"
+    }
+  },
+  "components": [
+    {
+      "type": "firmware",
+      "name": "shim",
+      "version": "@@SHIM_VERSION@@",
+      "bom-ref": "e383014a-b45e-4d06-a849-15685ad92f69",
+      "licenses": [
+        {
+          "license": {
+            "url": "https://spdx.org/licenses/BSD-2-Clause-Patent.html",
+            "id": "BSD-2-Clause-Patent"
+          }
+        }
+      ],
+      "supplier": {
+        "name": "@@PROJECT@@",
+        "url": [
+          "@@URL@@"
+        ]
+      },
+      "properties": [
+        {
+          "name": "product",
+          "value": "@@PRODUCT@@"
+        },
+        {
+          "name": "revision",
+          "value": "@@SHIM_RELEASE@@"
+        },
+        {
+          "name": "versionScheme",
+          "value": "multipartnumeric"
+        }
+      ]
+    }
+  ]
+}

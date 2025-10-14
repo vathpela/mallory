@@ -32,6 +32,9 @@ SECTIONS
   .sbatlevel : {
     *(.sbatlevel)
   }
+  .sbom : {
+    *(.sbom)
+  }
 
   . = ALIGN(4096);
   .data :
