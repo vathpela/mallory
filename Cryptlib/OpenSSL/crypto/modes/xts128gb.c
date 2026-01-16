@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2020 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 2022 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -20,10 +20,10 @@ typedef u64 u64_a1;
 # endif
 #endif
 
-int CRYPTO_xts128_encrypt(const XTS128_CONTEXT *ctx,
-                          const unsigned char iv[16],
-                          const unsigned char *inp, unsigned char *out,
-                          size_t len, int enc)
+int ossl_crypto_xts128gb_encrypt(const XTS128_CONTEXT *ctx,
+                                 const unsigned char iv[16],
+                                 const unsigned char *inp, unsigned char *out,
+                                 size_t len, int enc)
 {
     DECLARE_IS_ENDIAN;
     union {
@@ -69,24 +69,43 @@ int CRYPTO_xts128_encrypt(const XTS128_CONTEXT *ctx,
             return 0;
 
         if (IS_LITTLE_ENDIAN) {
-            unsigned int carry, res;
+            u8 res;
+            u64 hi, lo;
+#ifdef BSWAP8
+            hi = BSWAP8(tweak.u[0]);
+            lo = BSWAP8(tweak.u[1]);
+#else
+            u8 *p = tweak.c;
 
-            res = 0x87 & (((int)tweak.d[3]) >> 31);
-            carry = (unsigned int)(tweak.u[0] >> 63);
-            tweak.u[0] = (tweak.u[0] << 1) ^ res;
-            tweak.u[1] = (tweak.u[1] << 1) | carry;
+            hi = (u64)GETU32(p) << 32 | GETU32(p + 4);
+            lo = (u64)GETU32(p + 8) << 32 | GETU32(p + 12);
+#endif
+            res = (u8)lo & 1;
+            tweak.u[0] = (lo >> 1) | (hi << 63);
+            tweak.u[1] = hi >> 1;
+            if (res)
+                tweak.c[15] ^= 0xe1;
+#ifdef BSWAP8
+            hi = BSWAP8(tweak.u[0]);
+            lo = BSWAP8(tweak.u[1]);
+#else
+            p = tweak.c;
+
+            hi = (u64)GETU32(p) << 32 | GETU32(p + 4);
+            lo = (u64)GETU32(p + 8) << 32 | GETU32(p + 12);
+#endif
+            tweak.u[0] = lo;
+            tweak.u[1] = hi;
         } else {
-            size_t c;
-
-            for (c = 0, i = 0; i < 16; ++i) {
-                /*
-                 * + substitutes for |, because c is 1 bit
-                 */
-                c += ((size_t)tweak.c[i]) << 1;
-                tweak.c[i] = (u8)c;
-                c = c >> 8;
+            u8 carry, res;
+            carry = 0;
+            for (i = 0; i < 16; ++i) {
+                res = (tweak.c[i] << 7) & 0x80;
+                tweak.c[i] = ((tweak.c[i] >> 1) + carry) & 0xff;
+                carry = res;
             }
-            tweak.c[0] ^= (u8)(0x87 & (0 - c));
+            if (res)
+                tweak.c[0] ^= 0xe1;
         }
     }
     if (enc) {
@@ -108,24 +127,43 @@ int CRYPTO_xts128_encrypt(const XTS128_CONTEXT *ctx,
         } tweak1;
 
         if (IS_LITTLE_ENDIAN) {
-            unsigned int carry, res;
+            u8 res;
+            u64 hi, lo;
+#ifdef BSWAP8
+            hi = BSWAP8(tweak.u[0]);
+            lo = BSWAP8(tweak.u[1]);
+#else
+            u8 *p = tweak.c;
 
-            res = 0x87 & (((int)tweak.d[3]) >> 31);
-            carry = (unsigned int)(tweak.u[0] >> 63);
-            tweak1.u[0] = (tweak.u[0] << 1) ^ res;
-            tweak1.u[1] = (tweak.u[1] << 1) | carry;
+            hi = (u64)GETU32(p) << 32 | GETU32(p + 4);
+            lo = (u64)GETU32(p + 8) << 32 | GETU32(p + 12);
+#endif
+            res = (u8)lo & 1;
+            tweak1.u[0] = (lo >> 1) | (hi << 63);
+            tweak1.u[1] = hi >> 1;
+            if (res)
+                tweak1.c[15] ^= 0xe1;
+#ifdef BSWAP8
+            hi = BSWAP8(tweak1.u[0]);
+            lo = BSWAP8(tweak1.u[1]);
+#else
+            p = tweak1.c;
+
+            hi = (u64)GETU32(p) << 32 | GETU32(p + 4);
+            lo = (u64)GETU32(p + 8) << 32 | GETU32(p + 12);
+#endif
+            tweak1.u[0] = lo;
+            tweak1.u[1] = hi;
         } else {
-            size_t c;
-
-            for (c = 0, i = 0; i < 16; ++i) {
-                /*
-                 * + substitutes for |, because c is 1 bit
-                 */
-                c += ((size_t)tweak.c[i]) << 1;
-                tweak1.c[i] = (u8)c;
-                c = c >> 8;
+            u8 carry, res;
+            carry = 0;
+            for (i = 0; i < 16; ++i) {
+                res = (tweak.c[i] << 7) & 0x80;
+                tweak1.c[i] = ((tweak.c[i] >> 1) + carry) & 0xff;
+                carry = res;
             }
-            tweak1.c[0] ^= (u8)(0x87 & (0 - c));
+            if (res)
+                tweak1.c[0] ^= 0xe1;
         }
 #if defined(STRICT_ALIGNMENT)
         memcpy(scratch.c, inp, 16);
