@@ -2,13 +2,7 @@
   Pseudorandom Number Generator Wrapper Implementation over OpenSSL.
 
 Copyright (c) 2010 - 2013, Intel Corporation. All rights reserved.<BR>
-This program and the accompanying materials
-are licensed and made available under the terms and conditions of the BSD License
-which accompanies this distribution.  The full text of the license may be found at
-http://opensource.org/licenses/bsd-license.php
-
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
@@ -61,7 +55,7 @@ RandomSeed (
   // NOTE: A cryptographic PRNG must be seeded with unpredictable data.
   //
   if (Seed != NULL) {
-    RAND_seed (Seed, (UINT32) SeedSize);
+    RAND_seed (Seed, (UINT32)SeedSize);
   } else {
     RAND_seed (DefaultSeed, sizeof (DefaultSeed));
   }
@@ -95,14 +89,14 @@ RandomBytes (
   //
   // Check input parameters.
   //
-  if (Output == NULL || Size > INT_MAX) {
+  if ((Output == NULL) || (Size > INT_MAX)) {
     return FALSE;
   }
 
   //
   // Generate random data.
   //
-  if (RAND_bytes (Output, (UINT32) Size) != 1) {
+  if (RAND_bytes (Output, (UINT32)Size) != 1) {
     return FALSE;
   }
 
