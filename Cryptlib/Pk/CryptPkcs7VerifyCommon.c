@@ -10,14 +10,8 @@
   WrapPkcs7Data(), Pkcs7GetSigners(), Pkcs7Verify() will get UEFI Authenticated
   Variable and will do basic check for data structure.
 
-Copyright (c) 2009 - 2016, Intel Corporation. All rights reserved.<BR>
-This program and the accompanying materials
-are licensed and made available under the terms and conditions of the BSD License
-which accompanies this distribution.  The full text of the license may be found at
-http://opensource.org/licenses/bsd-license.php
-
-THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
-WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+Copyright (c) 2009 - 2019, Intel Corporation. All rights reserved.<BR>
+SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
 
@@ -28,96 +22,7 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 #include <openssl/x509v3.h>
 #include <openssl/pkcs7.h>
 
-UINT8 mOidValue[9] = { 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x02 };
-#if defined(ENABLE_CODESIGN_EKU)
-/* EKU CodeSign */
-CHAR8 mOidCodeSign[] = "1.3.6.1.5.5.7.3.3";
-#endif
-
-#if 1
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
-#define X509_OBJECT_get0_X509(obj) ((obj)->data.x509)
-#define X509_OBJECT_get_type(obj) ((obj)->type)
-#define X509_STORE_CTX_get0_cert(ctx) ((ctx)->cert)
-#define X509_STORE_get0_objects(certs) ((certs)->objs)
-#define X509_get_extended_key_usage(cert) ((cert)->ex_xkusage)
-#if OPENSSL_VERSION_NUMBER < 0x10020000L
-#define X509_STORE_CTX_get0_store(ctx) ((ctx)->ctx)
-#endif
-#endif
-
-static int cert_in_store(X509 *cert, X509_STORE_CTX *ctx)
-{
-  X509_OBJECT obj;
-  obj.type = X509_LU_X509;
-  obj.data.x509 = cert;
-  return X509_OBJECT_retrieve_match(ctx->ctx->objs, &obj) != NULL;
-}
-#else
-/*
- * Later versions of openssl will need this instead.
- */
-static int cert_in_store(X509 *cert, X509_STORE_CTX *ctx)
-{
-  STACK_OF(X509_OBJECT) *objs;
-  X509_OBJECT *obj;
-  int i;
-
-  objs = X509_STORE_get0_objects(X509_STORE_CTX_get0_store(ctx));
-
-  for (i = 0; i < sk_X509_OBJECT_num(objs); i++) {
-    obj = sk_X509_OBJECT_value(objs, i);
-
-    if (X509_OBJECT_get_type(obj) == X509_LU_X509 &&
-	!X509_cmp(X509_OBJECT_get0_X509(obj), cert))
-      return 1;
-  }
-
-  return 0;
-}
-#endif
-
-int
-X509VerifyCb (
-  IN int            Status,
-  IN X509_STORE_CTX *Context
-  )
-{
-  INTN         Error;
-
-  Error = (INTN) X509_STORE_CTX_get_error (Context);
-
-  /* Accept code-signing keys */
-  if (Error == X509_V_ERR_INVALID_PURPOSE &&
-      X509_get_extended_key_usage(X509_STORE_CTX_get0_cert(Context)) == XKU_CODE_SIGN) {
-    Status = 1;
-  } else if (Error == X509_V_ERR_CERT_UNTRUSTED ||
-	     Error == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT ||
-	     Error == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ||
-	     Error == X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE) {
-    /* all certs in our cert database are explicitly trusted */
-
-    if (cert_in_store(X509_STORE_CTX_get_current_cert(Context), Context))
-      Status = 1;
-  } else if (Error == X509_V_ERR_CERT_HAS_EXPIRED ||
-	     Error == X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD ||
-	     Error == X509_V_ERR_CERT_NOT_YET_VALID ||
-	     Error == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY ||
-	     Error == X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD) {
-    /* UEFI explicitly allows expired certificates */
-    Status = 1;
-#if 0
-  } else if (Error == X509_V_ERR_INVALID_CA) {
-    /* Due to the historical reason, we have to relax the the x509 v3 extension
-     * check to allow the CA certificates without the CA flag in the basic
-     * constraints or KeyCertSign in the key usage to be loaded. In the future,
-     * this callback should be removed to enforce the proper check. */
-    Status = 1;
-#endif
-  }
-
-  return Status;
-}
+GLOBAL_REMOVE_IF_UNREFERENCED const UINT8  mOidValue[9] = { 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x07, 0x02 };
 
 /**
   Check input P7Data is a wrapped ContentInfo structure or not. If not construct
@@ -151,8 +56,8 @@ WrapPkcs7Data (
   OUT UINTN        *WrapDataSize
   )
 {
-  BOOLEAN          Wrapped;
-  UINT8            *SignedData;
+  BOOLEAN  Wrapped;
+  UINT8    *SignedData;
 
   //
   // Check whether input P7Data is a wrapped ContentInfo structure or not.
@@ -167,7 +72,7 @@ WrapPkcs7Data (
   }
 
   if (Wrapped) {
-    *WrapData     = (UINT8 *) P7Data;
+    *WrapData     = (UINT8 *)P7Data;
     *WrapDataSize = P7Length;
   } else {
     //
@@ -191,8 +96,8 @@ WrapPkcs7Data (
     //
     // Part2: Length1 = P7Length + 19 - 4, in big endian.
     //
-    SignedData[2] = (UINT8) (((UINT16) (*WrapDataSize - 4)) >> 8);
-    SignedData[3] = (UINT8) (((UINT16) (*WrapDataSize - 4)) & 0xff);
+    SignedData[2] = (UINT8)(((UINT16)(*WrapDataSize - 4)) >> 8);
+    SignedData[3] = (UINT8)(((UINT16)(*WrapDataSize - 4)) & 0xff);
 
     //
     // Part3: 0x06, 0x09.
@@ -214,13 +119,13 @@ WrapPkcs7Data (
     //
     // Part6: Length2 = P7Length, in big endian.
     //
-    SignedData[17] = (UINT8) (((UINT16) P7Length) >> 8);
-    SignedData[18] = (UINT8) (((UINT16) P7Length) & 0xff);
+    SignedData[17] = (UINT8)(((UINT16)P7Length) >> 8);
+    SignedData[18] = (UINT8)(((UINT16)P7Length) & 0xff);
 
     //
     // Part7: P7Data.
     //
-    CopyMem (SignedData + 19, (void *)P7Data, P7Length);
+    CopyMem (SignedData + 19, P7Data, P7Length);
   }
 
   *WrapFlag = Wrapped;
@@ -240,20 +145,23 @@ WrapPkcs7Data (
   @retval     FALSE           The pop operation failed.
 
 **/
+STATIC
 BOOLEAN
 X509PopCertificate (
-  IN  VOID  *X509Stack,
-  OUT UINT8 **Cert,
-  OUT UINTN *CertSize
+  IN  VOID   *X509Stack,
+  OUT UINT8  **Cert,
+  OUT UINTN  *CertSize
   )
 {
-  BIO             *CertBio;
-  X509            *X509Cert;
-  STACK_OF(X509)  *CertStack;
-  BOOLEAN         Status;
-  INT32           Result;
-  INT32           Length;
-  VOID            *Buffer;
+  BIO   *CertBio;
+  X509  *X509Cert;
+
+  STACK_OF (X509)  *CertStack;
+  BOOLEAN  Status;
+  INT32    Result;
+  BUF_MEM  *Ptr;
+  INT32    Length;
+  VOID     *Buffer;
 
   Status = FALSE;
 
@@ -261,7 +169,7 @@ X509PopCertificate (
     return Status;
   }
 
-  CertStack = (STACK_OF(X509) *) X509Stack;
+  CertStack = (STACK_OF (X509) *) X509Stack;
 
   X509Cert = sk_X509_pop (CertStack);
 
@@ -281,7 +189,8 @@ X509PopCertificate (
     goto _Exit;
   }
 
-  Length = (INT32)(((BUF_MEM *) CertBio->ptr)->length);
+  BIO_get_mem_ptr (CertBio, &Ptr);
+  Length = (INT32)(Ptr->length);
   if (Length <= 0) {
     goto _Exit;
   }
@@ -327,10 +236,13 @@ _Exit:
   @param[in]  P7Data       Pointer to the PKCS#7 message to verify.
   @param[in]  P7Length     Length of the PKCS#7 message in bytes.
   @param[out] CertStack    Pointer to Signer's certificates retrieved from P7Data.
-                           It's caller's responsibility to free the buffer.
+                           It's caller's responsibility to free the buffer with
+                           Pkcs7FreeSigners().
+                           This data structure is EFI_CERT_STACK type.
   @param[out] StackLength  Length of signer's certificates in bytes.
   @param[out] TrustedCert  Pointer to a trusted certificate from Signer's certificates.
-                           It's caller's responsibility to free the buffer.
+                           It's caller's responsibility to free the buffer with
+                           Pkcs7FreeSigners().
   @param[out] CertLength   Length of the trusted certificate in bytes.
 
   @retval  TRUE            The operation is finished successfully.
@@ -348,23 +260,25 @@ Pkcs7GetSigners (
   OUT UINTN        *CertLength
   )
 {
-  PKCS7            *Pkcs7;
-  BOOLEAN          Status;
-  UINT8            *SignedData;
-  CONST UINT8      *Temp;
-  UINTN            SignedDataSize;
-  BOOLEAN          Wrapped;
-  STACK_OF(X509)   *Stack;
-  UINT8            Index;
-  UINT8            *CertBuf;
-  UINT8            *OldBuf;
-  UINTN            BufferSize;
-  UINTN            OldSize;
-  UINT8            *SingleCert;
-  UINTN            SingleCertSize;
+  PKCS7        *Pkcs7;
+  BOOLEAN      Status;
+  UINT8        *SignedData;
+  CONST UINT8  *Temp;
+  UINTN        SignedDataSize;
+  BOOLEAN      Wrapped;
+
+  STACK_OF (X509)   *Stack;
+  UINT8  Index;
+  UINT8  *CertBuf;
+  UINT8  *OldBuf;
+  UINTN  BufferSize;
+  UINTN  OldSize;
+  UINT8  *SingleCert;
+  UINTN  SingleCertSize;
 
   if ((P7Data == NULL) || (CertStack == NULL) || (StackLength == NULL) ||
-      (TrustedCert == NULL) || (CertLength == NULL) || (P7Length > INT_MAX)) {
+      (TrustedCert == NULL) || (CertLength == NULL) || (P7Length > INT_MAX))
+  {
     return FALSE;
   }
 
@@ -387,8 +301,8 @@ Pkcs7GetSigners (
     goto _Exit;
   }
 
-  Temp = SignedData;
-  Pkcs7 = d2i_PKCS7 (NULL, (const unsigned char **) &Temp, (int) SignedDataSize);
+  Temp  = SignedData;
+  Pkcs7 = d2i_PKCS7 (NULL, (const unsigned char **)&Temp, (int)SignedDataSize);
   if (Pkcs7 == NULL) {
     goto _Exit;
   }
@@ -400,7 +314,7 @@ Pkcs7GetSigners (
     goto _Exit;
   }
 
-  Stack = PKCS7_get0_signers(Pkcs7, NULL, PKCS7_BINARY);
+  Stack = PKCS7_get0_signers (Pkcs7, NULL, PKCS7_BINARY);
   if (Stack == NULL) {
     goto _Exit;
   }
@@ -440,7 +354,7 @@ Pkcs7GetSigners (
       OldBuf = NULL;
     }
 
-    WriteUnaligned32 ((UINT32 *) (CertBuf + OldSize), (UINT32) SingleCertSize);
+    WriteUnaligned32 ((UINT32 *)(CertBuf + OldSize), (UINT32)SingleCertSize);
     CopyMem (CertBuf + OldSize + sizeof (UINT32), SingleCert, SingleCertSize);
 
     free (SingleCert);
@@ -453,7 +367,7 @@ Pkcs7GetSigners (
     //
     CertBuf[0] = Index;
 
-    *CertLength = BufferSize - OldSize - sizeof (UINT32);
+    *CertLength  = BufferSize - OldSize - sizeof (UINT32);
     *TrustedCert = malloc (*CertLength);
     if (*TrustedCert == NULL) {
       goto _Exit;
@@ -462,7 +376,7 @@ Pkcs7GetSigners (
     CopyMem (*TrustedCert, CertBuf + OldSize + sizeof (UINT32), *CertLength);
     *CertStack   = CertBuf;
     *StackLength = BufferSize;
-    Status = TRUE;
+    Status       = TRUE;
   }
 
 _Exit:
@@ -478,7 +392,7 @@ _Exit:
   }
 
   if (Stack != NULL) {
-    sk_X509_pop_free(Stack, X509_free);
+    sk_X509_pop_free (Stack, X509_free);
   }
 
   if (SingleCert !=  NULL) {
@@ -506,7 +420,7 @@ _Exit:
 VOID
 EFIAPI
 Pkcs7FreeSigners (
-  IN  UINT8        *Certs
+  IN  UINT8  *Certs
   )
 {
   if (Certs == NULL) {
@@ -525,10 +439,13 @@ Pkcs7FreeSigners (
   @param[in]  P7Data            Pointer to the PKCS#7 message.
   @param[in]  P7Length          Length of the PKCS#7 message in bytes.
   @param[out] SignerChainCerts  Pointer to the certificates list chained to signer's
-                                certificate. It's caller's responsibility to free the buffer.
+                                certificate. It's caller's responsibility to free the buffer
+                                with Pkcs7FreeSigners().
+                                This data structure is EFI_CERT_STACK type.
   @param[out] ChainLength       Length of the chained certificates list buffer in bytes.
   @param[out] UnchainCerts      Pointer to the unchained certificates lists. It's caller's
-                                responsibility to free the buffer.
+                                responsibility to free the buffer with Pkcs7FreeSigners().
+                                This data structure is EFI_CERT_STACK type.
   @param[out] UnchainLength     Length of the unchained certificates list buffer in bytes.
 
   @retval  TRUE         The operation is finished successfully.
@@ -546,45 +463,52 @@ Pkcs7GetCertificatesList (
   OUT UINTN        *UnchainLength
   )
 {
-  BOOLEAN          Status;
-  UINT8            *NewP7Data;
-  UINTN            NewP7Length;
-  BOOLEAN          Wrapped;
-  UINT8            Index;
-  PKCS7            *Pkcs7;
-  X509_STORE_CTX   CertCtx;
-  STACK_OF(X509)   *Signers;
-  X509             *Signer;
-  X509             *Cert;
-  X509             *TempCert;
-  X509             *Issuer;
-  UINT8            *CertBuf;
-  UINT8            *OldBuf;
-  UINTN            BufferSize;
-  UINTN            OldSize;
-  UINT8            *SingleCert;
-  UINTN            CertSize;
+  BOOLEAN         Status;
+  UINT8           *NewP7Data;
+  UINTN           NewP7Length;
+  BOOLEAN         Wrapped;
+  UINT8           Index;
+  PKCS7           *Pkcs7;
+  X509_STORE_CTX  *CertCtx;
+
+  STACK_OF (X509)   *CtxChain;
+  STACK_OF (X509)   *CtxUntrusted;
+  X509  *CtxCert;
+
+  STACK_OF (X509)   *Signers;
+  X509       *Signer;
+  X509       *Cert;
+  X509       *Issuer;
+  X509_NAME  *IssuerName;
+  UINT8      *CertBuf;
+  UINT8      *OldBuf;
+  UINTN      BufferSize;
+  UINTN      OldSize;
+  UINT8      *SingleCert;
+  UINTN      CertSize;
 
   //
   // Initializations
   //
-  Status         = FALSE;
-  NewP7Data      = NULL;
-  Pkcs7          = NULL;
-  Cert           = NULL;
-  TempCert       = NULL;
-  SingleCert     = NULL;
-  CertBuf        = NULL;
-  OldBuf         = NULL;
-  Signers        = NULL;
-
-  ZeroMem (&CertCtx, sizeof (CertCtx));
+  Status       = FALSE;
+  NewP7Data    = NULL;
+  Pkcs7        = NULL;
+  CertCtx      = NULL;
+  CtxChain     = NULL;
+  CtxCert      = NULL;
+  CtxUntrusted = NULL;
+  Cert         = NULL;
+  SingleCert   = NULL;
+  CertBuf      = NULL;
+  OldBuf       = NULL;
+  Signers      = NULL;
 
   //
   // Parameter Checking
   //
   if ((P7Data == NULL) || (SignerChainCerts == NULL) || (ChainLength == NULL) ||
-      (UnchainCerts == NULL) || (UnchainLength == NULL) || (P7Length > INT_MAX)) {
+      (UnchainCerts == NULL) || (UnchainLength == NULL) || (P7Length > INT_MAX))
+  {
     return Status;
   }
 
@@ -604,7 +528,7 @@ Pkcs7GetCertificatesList (
   //
   // Decodes PKCS#7 SignedData
   //
-  Pkcs7 = d2i_PKCS7 (NULL, (const unsigned char **) &NewP7Data, (int) NewP7Length);
+  Pkcs7 = d2i_PKCS7 (NULL, (const unsigned char **)&NewP7Data, (int)NewP7Length);
   if ((Pkcs7 == NULL) || (!PKCS7_type_is_signed (Pkcs7))) {
     goto _Error;
   }
@@ -618,51 +542,64 @@ Pkcs7GetCertificatesList (
   if ((Signers == NULL) || (sk_X509_num (Signers) != 1)) {
     goto _Error;
   }
+
   Signer = sk_X509_value (Signers, 0);
 
-  if (!X509_STORE_CTX_init (&CertCtx, NULL, Signer, Pkcs7->d.sign->cert)) {
+  CertCtx = X509_STORE_CTX_new ();
+  if (CertCtx == NULL) {
     goto _Error;
   }
+
+  if (!X509_STORE_CTX_init (CertCtx, NULL, Signer, Pkcs7->d.sign->cert)) {
+    goto _Error;
+  }
+
   //
   // Initialize Chained & Untrusted stack
   //
-  if (CertCtx.chain == NULL) {
-    if (((CertCtx.chain = sk_X509_new_null ()) == NULL) ||
-        (!sk_X509_push (CertCtx.chain, CertCtx.cert))) {
+  CtxChain = X509_STORE_CTX_get0_chain (CertCtx);
+  CtxCert  = X509_STORE_CTX_get0_cert (CertCtx);
+  if (CtxChain == NULL) {
+    if (((CtxChain = sk_X509_new_null ()) == NULL) ||
+        (!sk_X509_push (CtxChain, CtxCert)))
+    {
       goto _Error;
     }
   }
-  (VOID)sk_X509_delete_ptr (CertCtx.untrusted, Signer);
+
+  CtxUntrusted = X509_STORE_CTX_get0_untrusted (CertCtx);
+  if (CtxUntrusted != NULL) {
+    (VOID)sk_X509_delete_ptr (CtxUntrusted, Signer);
+  }
 
   //
   // Build certificates stack chained from Signer's certificate.
   //
   Cert = Signer;
-  for (; ;) {
+  for ( ; ;) {
     //
     // Self-Issue checking
     //
-    if (CertCtx.check_issued (&CertCtx, Cert, Cert)) {
-      break;
+    Issuer = NULL;
+    if (X509_STORE_CTX_get1_issuer (&Issuer, CertCtx, Cert) == 1) {
+      if (X509_cmp (Issuer, Cert) == 0) {
+        break;
+      }
     }
 
     //
     // Found the issuer of the current certificate
     //
-    if (CertCtx.untrusted != NULL) {
-      Issuer = NULL;
-      for (Index = 0; Index < sk_X509_num (CertCtx.untrusted); Index++) {
-        TempCert = sk_X509_value (CertCtx.untrusted, Index);
-        if (CertCtx.check_issued (&CertCtx, Cert, TempCert)) {
-          Issuer = TempCert;
-          break;
-        }
-      }
+    if (CtxUntrusted != NULL) {
+      Issuer     = NULL;
+      IssuerName = X509_get_issuer_name (Cert);
+      Issuer     = X509_find_by_subject (CtxUntrusted, IssuerName);
       if (Issuer != NULL) {
-        if (!sk_X509_push (CertCtx.chain, Issuer)) {
+        if (!sk_X509_push (CtxChain, Issuer)) {
           goto _Error;
         }
-        (VOID)sk_X509_delete_ptr (CertCtx.untrusted, Issuer);
+
+        (VOID)sk_X509_delete_ptr (CtxUntrusted, Issuer);
 
         Cert = Issuer;
         continue;
@@ -684,13 +621,12 @@ Pkcs7GetCertificatesList (
   //      UINT8  Certn[];
   //
 
-  if (CertCtx.chain != NULL) {
+  if (CtxChain != NULL) {
     BufferSize = sizeof (UINT8);
-    OldSize    = BufferSize;
     CertBuf    = NULL;
 
     for (Index = 0; ; Index++) {
-      Status = X509PopCertificate (CertCtx.chain, &SingleCert, &CertSize);
+      Status = X509PopCertificate (CtxChain, &SingleCert, &CertSize);
       if (!Status) {
         break;
       }
@@ -704,13 +640,14 @@ Pkcs7GetCertificatesList (
         Status = FALSE;
         goto _Error;
       }
+
       if (OldBuf != NULL) {
         CopyMem (CertBuf, OldBuf, OldSize);
         free (OldBuf);
         OldBuf = NULL;
       }
 
-      WriteUnaligned32 ((UINT32 *) (CertBuf + OldSize), (UINT32) CertSize);
+      WriteUnaligned32 ((UINT32 *)(CertBuf + OldSize), (UINT32)CertSize);
       CopyMem (CertBuf + OldSize + sizeof (UINT32), SingleCert, CertSize);
 
       free (SingleCert);
@@ -728,13 +665,12 @@ Pkcs7GetCertificatesList (
     }
   }
 
-  if (CertCtx.untrusted != NULL) {
+  if (CtxUntrusted != NULL) {
     BufferSize = sizeof (UINT8);
-    OldSize    = BufferSize;
     CertBuf    = NULL;
 
     for (Index = 0; ; Index++) {
-      Status = X509PopCertificate (CertCtx.untrusted, &SingleCert, &CertSize);
+      Status = X509PopCertificate (CtxUntrusted, &SingleCert, &CertSize);
       if (!Status) {
         break;
       }
@@ -748,13 +684,14 @@ Pkcs7GetCertificatesList (
         Status = FALSE;
         goto _Error;
       }
+
       if (OldBuf != NULL) {
         CopyMem (CertBuf, OldBuf, OldSize);
         free (OldBuf);
         OldBuf = NULL;
       }
 
-      WriteUnaligned32 ((UINT32 *) (CertBuf + OldSize), (UINT32) CertSize);
+      WriteUnaligned32 ((UINT32 *)(CertBuf + OldSize), (UINT32)CertSize);
       CopyMem (CertBuf + OldSize + sizeof (UINT32), SingleCert, CertSize);
 
       free (SingleCert);
@@ -785,9 +722,13 @@ _Error:
   if (Pkcs7 != NULL) {
     PKCS7_free (Pkcs7);
   }
+
   sk_X509_free (Signers);
 
-  X509_STORE_CTX_cleanup (&CertCtx);
+  if (CertCtx != NULL) {
+    X509_STORE_CTX_cleanup (CertCtx);
+    X509_STORE_CTX_free (CertCtx);
+  }
 
   if (SingleCert != NULL) {
     free (SingleCert);
@@ -841,25 +782,22 @@ Pkcs7Verify (
   IN  UINTN        DataLength
   )
 {
-  PKCS7       *Pkcs7;
-  BIO         *DataBio;
-  BOOLEAN     Status;
-  X509        *Cert;
-  X509_STORE  *CertStore;
-  UINT8       *SignedData;
-  CONST UINT8 *Temp;
-  UINTN       SignedDataSize;
-  BOOLEAN     Wrapped;
-#if defined(ENABLE_CODESIGN_EKU)
-  CONST CHAR8 *Ekus[1];
-  EFI_STATUS  EFI_Status;
-#endif
+  PKCS7        *Pkcs7;
+  BIO          *DataBio;
+  BOOLEAN      Status;
+  X509         *Cert;
+  X509_STORE   *CertStore;
+  UINT8        *SignedData;
+  CONST UINT8  *Temp;
+  UINTN        SignedDataSize;
+  BOOLEAN      Wrapped;
 
   //
   // Check input parameters.
   //
-  if (P7Data == NULL || TrustedCert == NULL || InData == NULL ||
-    P7Length > INT_MAX || CertLength > INT_MAX || DataLength > INT_MAX) {
+  if ((P7Data == NULL) || (TrustedCert == NULL) || (InData == NULL) ||
+      (P7Length > INT_MAX) || (CertLength > INT_MAX) || (DataLength > INT_MAX))
+  {
     return FALSE;
   }
 
@@ -867,9 +805,6 @@ Pkcs7Verify (
   DataBio   = NULL;
   Cert      = NULL;
   CertStore = NULL;
-#if defined(ENABLE_CODESIGN_EKU)
-  Ekus[0]   = mOidCodeSign;
-#endif
 
   //
   // Register & Initialize necessary digest algorithms for PKCS#7 Handling
@@ -877,18 +812,23 @@ Pkcs7Verify (
   if (EVP_add_digest (EVP_md5 ()) == 0) {
     return FALSE;
   }
+
   if (EVP_add_digest (EVP_sha1 ()) == 0) {
     return FALSE;
   }
+
   if (EVP_add_digest (EVP_sha256 ()) == 0) {
     return FALSE;
   }
+
   if (EVP_add_digest (EVP_sha384 ()) == 0) {
     return FALSE;
   }
+
   if (EVP_add_digest (EVP_sha512 ()) == 0) {
     return FALSE;
   }
+
   if (EVP_add_digest_alias (SN_sha1WithRSAEncryption, SN_sha1WithRSA) == 0) {
     return FALSE;
   }
@@ -907,8 +847,8 @@ Pkcs7Verify (
     goto _Exit;
   }
 
-  Temp = SignedData;
-  Pkcs7 = d2i_PKCS7 (NULL, (const unsigned char **) &Temp, (int) SignedDataSize);
+  Temp  = SignedData;
+  Pkcs7 = d2i_PKCS7 (NULL, (const unsigned char **)&Temp, (int)SignedDataSize);
   if (Pkcs7 == NULL) {
     goto _Exit;
   }
@@ -924,7 +864,7 @@ Pkcs7Verify (
   // Read DER-encoded root certificate and Construct X509 Certificate
   //
   Temp = TrustedCert;
-  Cert = d2i_X509 (NULL, &Temp, (long) CertLength);
+  Cert = d2i_X509 (NULL, &Temp, (long)CertLength);
   if (Cert == NULL) {
     goto _Exit;
   }
@@ -936,22 +876,17 @@ Pkcs7Verify (
   if (CertStore == NULL) {
     goto _Exit;
   }
+
   if (!(X509_STORE_add_cert (CertStore, Cert))) {
     goto _Exit;
   }
-
-  X509_STORE_set_verify_cb (CertStore, X509VerifyCb);
 
   //
   // For generic PKCS#7 handling, InData may be NULL if the content is present
   // in PKCS#7 structure. So ignore NULL checking here.
   //
-  DataBio = BIO_new (BIO_s_mem ());
+  DataBio = BIO_new_mem_buf (InData, (int)DataLength);
   if (DataBio == NULL) {
-    goto _Exit;
-  }
-
-  if (BIO_write (DataBio, InData, (int) DataLength) <= 0) {
     goto _Exit;
   }
 
@@ -959,8 +894,10 @@ Pkcs7Verify (
   // Allow partial certificate chains, terminated by a non-self-signed but
   // still trusted intermediate certificate. Also disable time checks.
   //
-  X509_STORE_set_flags (CertStore,
-                        X509_V_FLAG_PARTIAL_CHAIN | X509_V_FLAG_NO_CHECK_TIME);
+  X509_STORE_set_flags (
+    CertStore,
+    X509_V_FLAG_PARTIAL_CHAIN | X509_V_FLAG_NO_CHECK_TIME
+    );
 
   //
   // OpenSSL PKCS7 Verification by default checks for SMIME (email signing) and
@@ -969,17 +906,10 @@ Pkcs7Verify (
   //
   X509_STORE_set_purpose (CertStore, X509_PURPOSE_ANY);
 
-#if defined(ENABLE_CODESIGN_EKU)
-  EFI_Status = VerifyEKUsInPkcs7Signature(P7Data, P7Length, Ekus, 1, TRUE);
-  if (EFI_Status != EFI_SUCCESS) {
-	  goto _Exit;
-  }
-#endif
-
   //
   // Verifies the PKCS#7 signedData structure
   //
-  Status = (BOOLEAN) PKCS7_verify (Pkcs7, NULL, CertStore, DataBio, NULL, PKCS7_BINARY);
+  Status = (BOOLEAN)PKCS7_verify (Pkcs7, NULL, CertStore, DataBio, NULL, PKCS7_BINARY);
 
 _Exit:
   //
@@ -988,117 +918,6 @@ _Exit:
   BIO_free (DataBio);
   X509_free (Cert);
   X509_STORE_free (CertStore);
-  PKCS7_free (Pkcs7);
-
-  if (!Wrapped) {
-    OPENSSL_free (SignedData);
-  }
-
-  return Status;
-}
-
-/**
-  Extracts the attached content from a PKCS#7 signed data if existed. The input signed
-  data could be wrapped in a ContentInfo structure.
-
-  If P7Data, Content, or ContentSize is NULL, then return FALSE. If P7Length overflow,
-  then return FALSE. If the P7Data is not correctly formatted, then return FALSE.
-
-  Caution: This function may receive untrusted input. So this function will do
-           basic check for PKCS#7 data structure.
-
-  @param[in]   P7Data       Pointer to the PKCS#7 signed data to process.
-  @param[in]   P7Length     Length of the PKCS#7 signed data in bytes.
-  @param[out]  Content      Pointer to the extracted content from the PKCS#7 signedData.
-                            It's caller's responsibility to free the buffer.
-  @param[out]  ContentSize  The size of the extracted content in bytes.
-
-  @retval     TRUE          The P7Data was correctly formatted for processing.
-  @retval     FALSE         The P7Data was not correctly formatted for processing.
-
-*/
-BOOLEAN
-EFIAPI
-Pkcs7GetAttachedContent (
-  IN  CONST UINT8  *P7Data,
-  IN  UINTN        P7Length,
-  OUT VOID         **Content,
-  OUT UINTN        *ContentSize
-  )
-{
-  BOOLEAN            Status;
-  PKCS7              *Pkcs7;
-  UINT8              *SignedData;
-  UINTN              SignedDataSize;
-  BOOLEAN            Wrapped;
-  CONST UINT8        *Temp;
-  ASN1_OCTET_STRING  *OctStr;
-
-  //
-  // Check input parameter.
-  //
-  if ((P7Data == NULL) || (P7Length > INT_MAX) || (Content == NULL) || (ContentSize == NULL)) {
-    return FALSE;
-  }
-
-  *Content   = NULL;
-  Pkcs7      = NULL;
-  SignedData = NULL;
-  OctStr     = NULL;
-
-  Status = WrapPkcs7Data (P7Data, P7Length, &Wrapped, &SignedData, &SignedDataSize);
-  if (!Status || (SignedDataSize > INT_MAX)) {
-    goto _Exit;
-  }
-
-  Status = FALSE;
-
-  //
-  // Decoding PKCS#7 SignedData
-  //
-  Temp  = SignedData;
-  Pkcs7 = d2i_PKCS7 (NULL, (const unsigned char **)&Temp, (int)SignedDataSize);
-  if (Pkcs7 == NULL) {
-    goto _Exit;
-  }
-
-  //
-  // The type of Pkcs7 must be signedData
-  //
-  if (!PKCS7_type_is_signed (Pkcs7)) {
-    goto _Exit;
-  }
-
-  //
-  // Check for detached or attached content
-  //
-  if (PKCS7_get_detached (Pkcs7)) {
-    //
-    // No Content supplied for PKCS7 detached signedData
-    //
-    *Content     = NULL;
-    *ContentSize = 0;
-  } else {
-    //
-    // Retrieve the attached content in PKCS7 signedData
-    //
-    OctStr = Pkcs7->d.sign->contents->d.data;
-    if ((OctStr->length > 0) && (OctStr->data != NULL)) {
-      *ContentSize = OctStr->length;
-      *Content     = malloc (*ContentSize);
-      if (*Content == NULL) {
-        *ContentSize = 0;
-        goto _Exit;
-      }
-      CopyMem (*Content, OctStr->data, *ContentSize);
-    }
-  }
-  Status = TRUE;
-
-_Exit:
-  //
-  // Release Resources
-  //
   PKCS7_free (Pkcs7);
 
   if (!Wrapped) {
