@@ -208,15 +208,22 @@ extern "C" {
 # ifndef OPENSSL_NO_MD4
 #  define OPENSSL_NO_MD4
 # endif
+/*# ifndef OPENSSL_NO_MD5
+#  define OPENSSL_NO_MD5
+# endif*/
+# ifndef OPENSSL_NO_SM3
+#  define OPENSSL_NO_SM3
+# endif
 # ifndef OPENSSL_NO_MDC2
 #  define OPENSSL_NO_MDC2
 # endif
-# ifndef OPENSSL_NO_ML_DSA
+// TODO: PQC
+/*# ifndef OPENSSL_NO_ML_DSA
 #  define OPENSSL_NO_ML_DSA
 # endif
 # ifndef OPENSSL_NO_ML_KEM
 #  define OPENSSL_NO_ML_KEM
-# endif
+# endif*/
 # ifndef OPENSSL_NO_MSAN
 #  define OPENSSL_NO_MSAN
 # endif

@@ -73,7 +73,8 @@ OBJS		=   Hash/CryptMd4Null.o \
 		    SysCall/CrtWrapper.o \
 		    SysCall/TimerWrapper.o \
 		    SysCall/BaseMemAllocation.o \
-		    SysCall/BaseStrings.o
+		    SysCall/BaseStrings.o \
+		    SysCall/math.o \
 
 ifeq ($(ENABLE_CODESIGN_EKU),1)
 	OBJS += Pk/CryptPkcs7VerifyEku.o

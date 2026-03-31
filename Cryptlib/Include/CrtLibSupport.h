@@ -249,6 +249,18 @@ char           *getenv     (const char *);
 char           *secure_getenv(const char *);
 int            inet_pton   (int, const char *, void *);
 
+INT64
+EFIAPI
+DivS64x64Remainder (
+  IN      INT64  Dividend,
+  IN      INT64  Divisor,
+  OUT     INT64  *Remainder  OPTIONAL
+  );
+
+void *memcpy     (void *, const void *, size_t);
+void setbuf(FILE *, char *buffer);
+int stat (const char *, struct stat *);
+
 //
 // Macros that directly map functions to BaseLib, BaseMemoryLib, and DebugLib functions
 //

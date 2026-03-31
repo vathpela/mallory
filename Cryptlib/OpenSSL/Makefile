@@ -15,6 +15,9 @@ INCLUDES	= -I$(OSSLDIR) -I$(CRYPTDIR) -I$(OSSLDIR)/Include/ \
 		  -I$(OSSLDIR)/crypto -I$(CRYPTDIR)/Include $(EFI_INCLUDES) \
 		  -I$(OSSLDIR)/crypto/asn1 -I$(OSSLDIR)/crypto/evp \
 		  -I$(OSSLDIR)/crypto/modes -I$(OSSLDIR)/crypto/include \
+		  -I$(OSSLDIR)/providers/common/include \
+		  -I$(OSSLDIR)/providers/implementations/include \
+		  -I$(OSSLDIR)/providers/fips/include \
 		  -isystem $(TOPDIR)/include/system \
 		  -isystem $(shell $(CC) -print-file-name=include)
 
@@ -61,6 +64,7 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/cversion.o \
 		  crypto/ex_data.o \
 		  crypto/cpt_err.o \
+		  crypto/der_writer.o \
 		  crypto/ebcdic.o \
 		  crypto/uid.o \
 		  crypto/o_time.o \
@@ -72,6 +76,93 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/md5/md5_dgst.o \
 		  crypto/md5/md5_one.o \
 		  crypto/sha/sha_dgst.o \
+		  crypto/sleep.o \
+		  crypto/bsearch.o \
+		  crypto/core_namemap.o \
+		  crypto/params.o \
+		  crypto/params_dup.o \
+		  crypto/params_idx.o \
+		  crypto/array_alloc.o \
+		  crypto/core_algorithm.o \
+		  crypto/context.o \
+		  crypto/getenv.o \
+		  crypto/passphrase.o \
+		  crypto/core_fetch.o \
+		  crypto/sparse_array.o \
+		  crypto/param_build_set.o \
+		  crypto/cpuid.o \
+		  crypto/mem_sec.o \
+		  crypto/trace.o \
+		  crypto/time.o \
+		  crypto/mem_clr.o \
+		  crypto/defaults.o \
+		  crypto/indicator_core.o \
+		  crypto/self_test_core.o \
+		  crypto/packet.o \
+		  crypto/comp_methods.o \
+		  crypto/param_build.o \
+		  crypto/asn1_dsa.o \
+		  crypto/params_from_text.o \
+		  crypto/punycode.o \
+		  crypto/deterministic_nonce.o \
+		  crypto/provider/provider.o \
+		  crypto/provider/provider_core.o \
+		  crypto/provider/provider_conf.o \
+		  crypto/provider/provider_child.o \
+		  crypto/provider/provider_predefined.o \
+		  crypto/provider/rand/rand_pool.o \
+		  crypto/hpke/hpke.o \
+		  crypto/hpke/hpke_util.o \
+		  crypto/http/http_lib.o \
+		  crypto/ec/curve25519.o \
+		  crypto/ec/ec2_oct.o \
+		  crypto/ec/ec2_smpl.o \
+		  crypto/ec/ec_ameth.o \
+		  crypto/ec/ec_asn1.o \
+		  crypto/ec/ec_backend.o \
+		  crypto/ec/ec_check.o \
+		  crypto/ec/ec_curve.o \
+		  crypto/ec/ec_cvt.o \
+		  crypto/ec/ec_deprecated.o \
+		  crypto/ec/ecdh_kdf.o \
+		  crypto/ec/ecdh_ossl.o \
+		  crypto/ec/ecdsa_ossl.o \
+		  crypto/ec/ecdsa_sign.o \
+		  crypto/ec/ecdsa_vrf.o \
+		  crypto/ec/ec_err.o \
+		  crypto/ec/ec_key.o \
+		  crypto/ec/ec_kmeth.o \
+		  crypto/ec/eck_prn.o \
+		  crypto/ec/ec_lib.o \
+		  crypto/ec/ec_mult.o \
+		  crypto/ec/ec_oct.o \
+		  crypto/ec/ec_pmeth.o \
+		  crypto/ec/ecp_mont.o \
+		  crypto/ec/ecp_nist.o \
+		  crypto/ec/ecp_nistp224.o \
+		  crypto/ec/ecp_nistp256.o \
+		  crypto/ec/ecp_nistp384.o \
+		  crypto/ec/ecp_nistp521.o \
+		  crypto/ec/ecp_nistputil.o \
+		  crypto/ec/ecp_nistz256.o \
+		  crypto/ec/ecp_nistz256_table.o \
+		  crypto/ec/ecp_oct.o \
+		  crypto/ec/ecp_ppc.o \
+		  crypto/ec/ec_print.o \
+		  crypto/ec/ecp_s390x_nistp.o \
+		  crypto/ec/ecp_sm2p256.o \
+		  crypto/ec/ecp_sm2p256_table.o \
+		  crypto/ec/ecp_smpl.o \
+		  crypto/ec/ecx_backend.o \
+		  crypto/ec/ecx_key.o \
+		  crypto/ec/ecx_meth.o \
+		  crypto/ec/ecx_s390x.o \
+		  crypto/ec/curve448/curve448.o \
+		  crypto/ec/curve448/curve448_tables.o \
+		  crypto/ec/curve448/eddsa.o \
+		  crypto/ec/curve448/f_generic.o \
+		  crypto/ec/curve448/scalar.o \
+		  crypto/ec/curve448/arch_64/f_impl64.o \
 		  crypto/sha/sha1dgst.o \
 		  crypto/sha/sha_one.o \
 		  crypto/sha/sha1_one.o \
@@ -98,7 +189,6 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/modes/ctr128.o \
 		  crypto/modes/cts128.o \
 		  crypto/modes/gcm128.o \
-		  crypto/modes/ocb128.o \
 		  crypto/modes/ofb128.o \
 		  crypto/modes/siv128.o \
 		  crypto/modes/wrap128.o \
@@ -620,11 +710,188 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/slh_dsa/slh_params.o \
 		  crypto/slh_dsa/slh_wots.o \
 		  crypto/slh_dsa/slh_xmss.o \
+		  crypto/encode_decode/decoder_err.o \
+		  crypto/encode_decode/decoder_lib.o \
+		  crypto/encode_decode/decoder_meth.o \
+		  crypto/encode_decode/decoder_pkey.o \
+		  crypto/encode_decode/encoder_err.o \
+		  crypto/encode_decode/encoder_lib.o \
+		  crypto/encode_decode/encoder_meth.o \
+		  crypto/encode_decode/encoder_pkey.o \
+		  crypto/property/defn_cache.o \
+		  crypto/property/property.o \
+		  crypto/property/property_err.o \
+		  crypto/property/property_parse.o \
+		  crypto/property/property_query.o \
+		  crypto/property/property_string.o \
+		  crypto/ffc/ffc_backend.o \
+		  crypto/ffc/ffc_dh.o \
+		  crypto/ffc/ffc_key_generate.o \
+		  crypto/ffc/ffc_key_validate.o \
+		  crypto/ffc/ffc_params.o \
+		  crypto/ffc/ffc_params_generate.o \
+		  crypto/ffc/ffc_params_validate.o \
+		  crypto/async/async.o \
+		  crypto/async/async_err.o \
+		  crypto/async/async_wait.o \
+		  crypto/async/arch/async_null.o \
+		  crypto/async/arch/async_posix.o \
+		  crypto/async/arch/async_win.o \
+		  crypto/hashtable/hashtable.o \
+		  crypto/hashtable/hashfunc.o \
+		  crypto/ui/ui_err.o \
+		  crypto/ui/ui_lib.o \
+		  crypto/ui/ui_null.o \
+		  crypto/ui/ui_openssl.o \
+		  crypto/ui/ui_util.o \
+		  crypto/md5/md5_dgst.o \
+		  crypto/md5/md5_one.o \
+		  crypto/md5/md5_sha1.o \
+
+OBJSPROV	= providers/ossl_store.o \
+		  providers/baseprov.o \
+		  providers/defltprov.o \
+		  providers/legacyprov.o \
+		  providers/nullprov.o \
+		  providers/prov_running.o \
+		  providers/common/bio_prov.o \
+		  providers/common/capabilities.o \
+		  providers/common/digest_to_nid.o \
+		  providers/common/provider_ctx.o \
+		  providers/common/provider_err.o \
+		  providers/common/provider_seeding.o \
+		  providers/common/provider_util.o \
+		  providers/common/securitycheck.o \
+		  providers/common/securitycheck_default.o \
+		  providers/common/der/der_digests_gen.o \
+		  providers/common/der/der_dsa_key.o \
+		  providers/common/der/der_dsa_sig.o \
+		  providers/common/der/der_ec_gen.o \
+		  providers/common/der/der_ec_key.o \
+		  providers/common/der/der_ec_sig.o \
+		  providers/common/der/der_ecx_gen.o \
+		  providers/common/der/der_ecx_key.o \
+		  providers/common/der/der_ml_dsa_gen.o \
+		  providers/common/der/der_ml_dsa_key.o \
+		  providers/common/der/der_rsa_gen.o \
+		  providers/common/der/der_rsa_key.o \
+		  providers/common/der/der_rsa_sig.o \
+		  providers/common/der/der_slh_dsa_gen.o \
+		  providers/common/der/der_slh_dsa_key.o \
+		  providers/common/der/der_wrap_gen.o \
+		  providers/implementations/asymciphers/rsa_enc.o \
+		  providers/implementations/ciphers/cipher_aes.o \
+		  providers/implementations/ciphers/cipher_aes_cbc_hmac_sha1_hw.o \
+		  providers/implementations/ciphers/cipher_aes_cbc_hmac_sha256_hw.o \
+		  providers/implementations/ciphers/cipher_aes_cbc_hmac_sha.o \
+		  providers/implementations/ciphers/cipher_aes_ccm.o \
+		  providers/implementations/ciphers/cipher_aes_ccm_hw.o \
+		  providers/implementations/ciphers/cipher_aes_gcm.o \
+		  providers/implementations/ciphers/cipher_aes_gcm_hw.o \
+		  providers/implementations/ciphers/cipher_aes_hw.o \
+		  providers/implementations/ciphers/cipher_aes_wrp.o \
+		  providers/implementations/ciphers/cipher_aes_xts.o \
+		  providers/implementations/ciphers/cipher_aes_xts_hw.o \
+		  providers/implementations/ciphers/cipher_aes_xts_fips.o \
+		  providers/implementations/ciphers/ciphercommon_block.o \
+		  providers/implementations/ciphers/ciphercommon.o \
+		  providers/implementations/ciphers/ciphercommon_ccm.o \
+		  providers/implementations/ciphers/ciphercommon_ccm_hw.o \
+		  providers/implementations/ciphers/ciphercommon_gcm.o \
+		  providers/implementations/ciphers/ciphercommon_gcm_hw.o \
+		  providers/implementations/ciphers/ciphercommon_hw.o \
+		  providers/implementations/ciphers/cipher_cts.o \
+		  providers/implementations/ciphers/cipher_null.o \
+		  providers/implementations/digests/digestcommon.o \
+		  providers/implementations/digests/null_prov.o \
+		  providers/implementations/digests/md5_prov.o \
+		  providers/implementations/digests/md5_sha1_prov.o \
+		  providers/implementations/digests/sha2_prov.o \
+		  providers/implementations/digests/sha3_prov.o \
+		  providers/implementations/encode_decode/decode_der2key.o \
+		  providers/implementations/encode_decode/decode_epki2pki.o \
+		  providers/implementations/encode_decode/decode_msblob2key.o \
+		  providers/implementations/encode_decode/decode_pem2der.o \
+		  providers/implementations/encode_decode/decode_pvk2key.o \
+		  providers/implementations/encode_decode/decode_spki2typespki.o \
+		  providers/implementations/encode_decode/encode_key2any.o \
+		  providers/implementations/encode_decode/encode_key2blob.o \
+		  providers/implementations/encode_decode/encode_key2ms.o \
+		  providers/implementations/encode_decode/encode_key2text.o \
+		  providers/implementations/encode_decode/endecoder_common.o \
+		  providers/implementations/encode_decode/ml_common_codecs.o \
+		  providers/implementations/encode_decode/ml_dsa_codecs.o \
+		  providers/implementations/encode_decode/ml_kem_codecs.o \
+		  providers/implementations/exchange/dh_exch.o \
+		  providers/implementations/exchange/ecdh_exch.o \
+		  providers/implementations/exchange/ecx_exch.o \
+		  providers/implementations/exchange/kdf_exch.o \
+		  providers/implementations/kdfs/argon2.o \
+		  providers/implementations/kdfs/hkdf.o \
+		  providers/implementations/kdfs/hmacdrbg_kdf.o \
+		  providers/implementations/kdfs/kbkdf.o \
+		  providers/implementations/kdfs/krb5kdf.o \
+		  providers/implementations/kdfs/pbkdf1.o \
+		  providers/implementations/kdfs/pbkdf2.o \
+		  providers/implementations/kdfs/pbkdf2_fips.o \
+		  providers/implementations/kdfs/pkcs12kdf.o \
+		  providers/implementations/kdfs/pvkkdf.o \
+		  providers/implementations/kdfs/scrypt.o \
+		  providers/implementations/kdfs/sshkdf.o \
+		  providers/implementations/kdfs/sskdf.o \
+		  providers/implementations/kdfs/tls1_prf.o \
+		  providers/implementations/kdfs/x942kdf.o \
+		  providers/implementations/kem/ec_kem.o \
+		  providers/implementations/kem/ecx_kem.o \
+		  providers/implementations/kem/kem_util.o \
+		  providers/implementations/kem/ml_kem_kem.o \
+		  providers/implementations/kem/mlx_kem.o \
+		  providers/implementations/kem/rsa_kem.o \
+		  providers/implementations/kem/template_kem.o \
+		  providers/implementations/keymgmt/dh_kmgmt.o \
+		  providers/implementations/keymgmt/ec_kmgmt.o \
+		  providers/implementations/keymgmt/ecx_kmgmt.o \
+		  providers/implementations/keymgmt/kdf_legacy_kmgmt.o \
+		  providers/implementations/keymgmt/mac_legacy_kmgmt.o \
+		  providers/implementations/keymgmt/ml_dsa_kmgmt.o \
+		  providers/implementations/keymgmt/ml_kem_kmgmt.o \
+		  providers/implementations/keymgmt/mlx_kmgmt.o \
+		  providers/implementations/keymgmt/rsa_kmgmt.o \
+		  providers/implementations/keymgmt/slh_dsa_kmgmt.o \
+		  providers/implementations/keymgmt/template_kmgmt.o \
+		  providers/implementations/macs/cmac_prov.o \
+		  providers/implementations/macs/gmac_prov.o \
+		  providers/implementations/macs/kmac_prov.o \
+		  providers/implementations/macs/poly1305_prov.o \
+		  providers/implementations/macs/siphash_prov.o \
+		  providers/implementations/rands/drbg.o \
+		  providers/implementations/rands/drbg_ctr.o \
+		  providers/implementations/rands/drbg_hash.o \
+		  providers/implementations/rands/drbg_hmac.o \
+		  providers/implementations/rands/seed_src.o \
+		  providers/implementations/rands/seed_src_jitter.o \
+		  providers/implementations/rands/test_rng.o \
+		  providers/implementations/rands/seeding/rand_cpu_x86.o \
+		  providers/implementations/rands/seeding/rand_tsc.o \
+		  providers/implementations/rands/seeding/rand_unix.o \
+		  providers/implementations/rands/seeding/rand_cpu_arm64.o \
+		  providers/implementations/rands/seeding/rand_win.o \
+		  providers/implementations/signature/ecdsa_sig.o \
+		  providers/implementations/signature/eddsa_sig.o \
+		  providers/implementations/signature/mac_legacy_sig.o \
+		  providers/implementations/signature/ml_dsa_sig.o \
+		  providers/implementations/signature/rsa_sig.o \
+		  providers/implementations/signature/slh_dsa_sig.o \
+		  providers/implementations/skeymgmt/aes_skmgmt.o \
+		  providers/implementations/skeymgmt/generic.o \
+		  providers/implementations/storemgmt/file_store_any2obj.o \
+
+der_wrap_gen.call: $(TARGET)
 
 all: $(TARGET)
 
-libopenssl.a: $(OBJS)
-	ar rcs libopenssl.a $(OBJS)
+libopenssl.a: $(OBJS) $(OBJSPROV)
+	ar rcs libopenssl.a $(OBJS) $(OBJSPROV)
 
 clean:
-	rm -f $(TARGET) $(OBJS)
+	rm -f $(TARGET) $(OBJS) $(OBJSPROV)
