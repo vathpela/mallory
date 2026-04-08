@@ -326,7 +326,7 @@ static const OSSL_ALGORITHM deflt_macs[] = {
     { PROV_NAMES_CMAC, "provider=default", ossl_cmac_functions },
 #endif
     { PROV_NAMES_GMAC, "provider=default", ossl_gmac_functions },
-    { PROV_NAMES_HMAC, "provider=default", ossl_hmac_functions },
+//    { PROV_NAMES_HMAC, "provider=default", ossl_hmac_functions },
     { PROV_NAMES_KMAC_128, "provider=default", ossl_kmac128_functions },
     { PROV_NAMES_KMAC_256, "provider=default", ossl_kmac256_functions },
 #ifndef OPENSSL_NO_SIPHASH

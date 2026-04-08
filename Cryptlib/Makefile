@@ -59,6 +59,7 @@ OBJS		=   Hash/CryptMd4Null.o \
 		    Cipher/CryptTdesNull.o \
 		    Cipher/CryptArc4Null.o \
 		    Rand/CryptRand.o \
+		    Rand/BaseRngLibNull.o \
 		    Pk/CryptRsaBasic.o \
 		    Pk/CryptRsaExtNull.o \
 		    Pk/CryptPkcs7SignNull.o \

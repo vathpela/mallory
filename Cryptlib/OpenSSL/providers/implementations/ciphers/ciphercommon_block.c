@@ -144,30 +144,5 @@ int ossl_cipher_tlsunpadblock(OSSL_LIB_CTX *libctx, unsigned int tlsversion,
                               unsigned char **mac, int *alloced, size_t macsize,
                               int aead)
 {
-    int ret;
-
-    switch (tlsversion) {
-    case SSL3_VERSION:
-        return ssl3_cbc_remove_padding_and_mac(buflen, *buflen, buf, mac,
-                                               alloced, blocksize, macsize,
-                                               libctx);
-
-    case TLS1_2_VERSION:
-    case DTLS1_2_VERSION:
-    case TLS1_1_VERSION:
-    case DTLS1_VERSION:
-    case DTLS1_BAD_VER:
-        /* Remove the explicit IV */
-        buf += blocksize;
-        *buflen -= blocksize;
-        /* Fall through */
-    case TLS1_VERSION:
-        ret = tls1_cbc_remove_padding_and_mac(buflen, *buflen, buf, mac,
-                                              alloced, blocksize, macsize,
-                                              aead, libctx);
-        return ret;
-
-    default:
-        return 0;
-    }
+    return 0;
 }

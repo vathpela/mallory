@@ -110,7 +110,6 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/provider/provider_conf.o \
 		  crypto/provider/provider_child.o \
 		  crypto/provider/provider_predefined.o \
-		  crypto/provider/rand/rand_pool.o \
 		  crypto/hpke/hpke.o \
 		  crypto/hpke/hpke_util.o \
 		  crypto/http/http_lib.o \
@@ -317,6 +316,7 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/stack/stack.o \
 		  crypto/lhash/lhash.o \
 		  crypto/lhash/lh_stats.o \
+		  crypto/rand/drbg.o \
 		  crypto/rand/prov_seed.o \
 		  crypto/rand/rand_deprecated.o \
 		  crypto/rand/rand_egd.o \
@@ -757,10 +757,10 @@ OBJSPROV	= providers/ossl_store.o \
 		  providers/common/bio_prov.o \
 		  providers/common/capabilities.o \
 		  providers/common/digest_to_nid.o \
-		  providers/common/provider_ctx.o \
-		  providers/common/provider_err.o \
 		  providers/common/provider_seeding.o \
 		  providers/common/provider_util.o \
+		  providers/common/provider_ctx.o \
+		  providers/common/provider_err.o \
 		  providers/common/securitycheck.o \
 		  providers/common/securitycheck_default.o \
 		  providers/common/der/der_digests_gen.o \
@@ -886,12 +886,15 @@ OBJSPROV	= providers/ossl_store.o \
 		  providers/implementations/skeymgmt/generic.o \
 		  providers/implementations/storemgmt/file_store_any2obj.o \
 
+OBJSSTUB	  = stub/rand_pool.o \
+		  stub/ossl_store.o \
+
 der_wrap_gen.call: $(TARGET)
 
 all: $(TARGET)
 
-libopenssl.a: $(OBJS) $(OBJSPROV)
-	ar rcs libopenssl.a $(OBJS) $(OBJSPROV)
+libopenssl.a: $(OBJS) $(OBJSPROV) $(OBJSSTUB)
+	ar rcs libopenssl.a $(OBJS) $(OBJSPROV) $(OBJSSTUB)
 
 clean:
-	rm -f $(TARGET) $(OBJS) $(OBJSPROV)
+	rm -f $(TARGET) $(OBJS) $(OBJSPROV) $(OBJSSTUB)
