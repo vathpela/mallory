@@ -12,8 +12,8 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 
 **/
 
-#ifndef __OPEN_SSL_SUPPORT_H__
-#define __OPEN_SSL_SUPPORT_H__
+#ifndef __CRT_LIB_SUPPORT_H__
+#define __CRT_LIB_SUPPORT_H__
 
 #if defined(__x86_64__)
 /* shim.h will check if the compiler is new enough in some other CU */

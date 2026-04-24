@@ -59,7 +59,7 @@
 #ifndef HEADER_BIO_H
 # define HEADER_BIO_H
 
-# include <OpenSslSupport.h>
+# include <CrtLibSupport.h>
 # include <openssl/e_os2.h>
 
 # ifndef OPENSSL_NO_FP_API

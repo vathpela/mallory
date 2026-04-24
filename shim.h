@@ -197,7 +197,7 @@
 #include "version.h"
 
 #ifndef SHIM_UNIT_TEST
-#include "Cryptlib/Include/OpenSslSupport.h"
+#include "Cryptlib/Include/CrtLibSupport.h"
 #endif
 
 #define MEM_ATTR_R	4

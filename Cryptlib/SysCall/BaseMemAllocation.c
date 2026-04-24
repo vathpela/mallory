@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 
 **/
 
-#include <OpenSslSupport.h>
+#include <CrtLibSupport.h>
 
 //
 // Extra header to record the memory buffer size from malloc routine.
