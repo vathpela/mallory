@@ -78,6 +78,8 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/sha/sha1_one.o \
 		  crypto/sha/sha256.o \
 		  crypto/sha/sha512.o \
+		  crypto/sha/sha3.o \
+		  crypto/sha/keccak1600.o \
 		  crypto/hmac/hmac.o \
 		  crypto/hmac/hm_ameth.o \
 		  crypto/hmac/hm_pmeth.o \
