@@ -77,9 +77,6 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/o_init.o \
 		  crypto/threads_none.o \
 		  crypto/fips_ers.o \
-		  crypto/md5/md5_dgst.o \
-		  crypto/md5/md5_one.o \
-		  crypto/sha/sha_dgst.o \
 		  crypto/sleep.o \
 		  crypto/bsearch.o \
 		  crypto/core_namemap.o \
@@ -167,7 +164,6 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/ec/curve448/scalar.o \
 		  crypto/ec/curve448/arch_64/f_impl64.o \
 		  crypto/sha/sha1dgst.o \
-		  crypto/sha/sha_one.o \
 		  crypto/sha/sha1_one.o \
 		  crypto/sha/sha256.o \
 		  crypto/sha/sha512.o \
