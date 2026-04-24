@@ -8,15 +8,19 @@
  * https://www.openssl.org/source/license.html
  */
 
-#ifndef OPENSSL_PROVERR_H
-# define OPENSSL_PROVERR_H
+#ifndef OSSL_PROVERR_H
+# define OSSL_PROVERR_H
 # pragma once
 
 # include <openssl/opensslconf.h>
 # include <openssl/symhacks.h>
 # include <openssl/cryptoerr_legacy.h>
 
+# ifdef  __cplusplus
+extern "C" {
+# endif
 
+int ossl_err_load_PROV_strings(void);
 
 /*
  * PROV reason codes.
@@ -133,6 +137,7 @@
 # define PROV_R_PATH_MUST_BE_ABSOLUTE                     219
 # define PROV_R_PERSONALISATION_STRING_TOO_LONG           195
 # define PROV_R_PSS_SALTLEN_TOO_SMALL                     172
+# define PROV_R_REPEATED_PARAMETER                        252
 # define PROV_R_REQUEST_TOO_LARGE_FOR_DRBG                196
 # define PROV_R_REQUIRE_CTR_MODE_CIPHER                   206
 # define PROV_R_RESEED_ERROR                              197
@@ -166,4 +171,7 @@
 # define PROV_R_XTS_DATA_UNIT_IS_TOO_LARGE                148
 # define PROV_R_XTS_DUPLICATED_KEYS                       149
 
+# ifdef  __cplusplus
+}
+# endif
 #endif
