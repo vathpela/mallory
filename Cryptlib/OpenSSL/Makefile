@@ -639,7 +639,6 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/ocsp/ocsp_cl.o \
 		  crypto/ocsp/ocsp_err.o \
 		  crypto/ocsp/ocsp_ext.o \
-		  crypto/ocsp/ocsp_http.o \
 		  crypto/ocsp/ocsp_lib.o \
 		  crypto/ocsp/ocsp_prn.o \
 		  crypto/ocsp/ocsp_srv.o \
