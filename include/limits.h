@@ -6,6 +6,8 @@
 
 #pragma once
 
+#warning why
+#include_next <limits.h>
 
 
 // vim:fenc=utf-8:tw=75:noet
