@@ -596,42 +596,6 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/x509/x_req.o \
 		  crypto/x509/x_x509a.o \
 		  crypto/x509/x_x509.o \
-		  crypto/x509v3/pcy_cache.o \
-		  crypto/x509v3/pcy_data.o \
-		  crypto/x509v3/pcy_lib.o \
-		  crypto/x509v3/pcy_map.o \
-		  crypto/x509v3/pcy_node.o \
-		  crypto/x509v3/pcy_tree.o \
-		  crypto/x509v3/v3_addr.o \
-		  crypto/x509v3/v3_akeya.o \
-		  crypto/x509v3/v3_akey.o \
-		  crypto/x509v3/v3_alt.o \
-		  crypto/x509v3/v3_asid.o \
-		  crypto/x509v3/v3_bcons.o \
-		  crypto/x509v3/v3_bitst.o \
-		  crypto/x509v3/v3_conf.o \
-		  crypto/x509v3/v3_cpols.o \
-		  crypto/x509v3/v3_crld.o \
-		  crypto/x509v3/v3_enum.o \
-		  crypto/x509v3/v3err.o \
-		  crypto/x509v3/v3_extku.o \
-		  crypto/x509v3/v3_genn.o \
-		  crypto/x509v3/v3_ia5.o \
-		  crypto/x509v3/v3_info.o \
-		  crypto/x509v3/v3_int.o \
-		  crypto/x509v3/v3_lib.o \
-		  crypto/x509v3/v3_ncons.o \
-		  crypto/x509v3/v3_ocsp.o \
-		  crypto/x509v3/v3_pcia.o \
-		  crypto/x509v3/v3_pci.o \
-		  crypto/x509v3/v3_pcons.o \
-		  crypto/x509v3/v3_pku.o \
-		  crypto/x509v3/v3_pmaps.o \
-		  crypto/x509v3/v3_prn.o \
-		  crypto/x509v3/v3_purp.o \
-		  crypto/x509v3/v3_skey.o \
-		  crypto/x509v3/v3_sxnet.o \
-		  crypto/x509v3/v3_utl.o \
 		  crypto/conf/conf_api.o \
 		  crypto/conf/conf_def.o \
 		  crypto/conf/conf_err.o \
@@ -641,7 +605,6 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/conf/conf_sap.o \
 		  crypto/conf/conf_ssl.o \
 		  crypto/x509/v3_conf.o \
-		  crypto/x509v3/v3_conf.o \
 		  crypto/txt_db/txt_db.o \
 		  crypto/pkcs7/bio_pk7.o \
 		  crypto/pkcs7/pk7_asn1.o \
