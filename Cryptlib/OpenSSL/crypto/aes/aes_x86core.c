@@ -65,7 +65,7 @@ static void prefetch256(const void *table)
 {
     volatile unsigned long *t = (void *)table, ret;
     unsigned long sum;
-    int i;
+    unsigned int i;
 
     /* 32 is common least cache-line size */
     for (sum = 0, i = 0; i < 256/sizeof(t[0]); i += 32/sizeof(t[0]))

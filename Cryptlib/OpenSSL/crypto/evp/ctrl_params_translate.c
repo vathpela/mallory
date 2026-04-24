@@ -1430,8 +1430,8 @@ static int fix_rsa_pss_saltlen(enum state state,
                 break;
         }
 
-        val = i == OSSL_NELEM(str_value_map) ? atoi(ctx->p2)
-                                             : (int)str_value_map[i].id;
+        val = (int)(i == OSSL_NELEM(str_value_map) ? atoi(ctx->p2)
+                                             : str_value_map[i].id);
         if (state == POST_CTRL_TO_PARAMS) {
             /*
              * EVP_PKEY_CTRL_GET_RSA_PSS_SALTLEN weirdness explained further

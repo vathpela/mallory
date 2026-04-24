@@ -1242,7 +1242,7 @@ X509GetSignatureAlgorithm (
   }
 
   if (Oid != NULL) {
-    CopyMem (Oid, Asn1Obj->data, Asn1Obj->length);
+    CopyMem (Oid, (IN VOID *)Asn1Obj->data, Asn1Obj->length);
   }
 
   *OidSize = Asn1Obj->length;
@@ -1375,7 +1375,7 @@ X509GetExtensionData (
     }
 
     if (Asn1Oct != NULL) {
-      CopyMem (ExtensionData, ASN1_STRING_get0_data (Asn1Oct), OctLength);
+      CopyMem (ExtensionData, (IN VOID *)ASN1_STRING_get0_data (Asn1Oct), OctLength);
     }
 
     *ExtensionDataSize = OctLength;
@@ -1501,7 +1501,7 @@ X509GetValidity  (
 
   *FromSize = FSize;
   if (From != NULL) {
-    CopyMem (From, F, sizeof (ASN1_TIME));
+    CopyMem (From, (IN VOID *)F, sizeof (ASN1_TIME));
     ((ASN1_TIME *)From)->data = From + sizeof (ASN1_TIME);
     CopyMem (From + sizeof (ASN1_TIME), F->data, F->length);
   }
@@ -1514,7 +1514,7 @@ X509GetValidity  (
 
   *ToSize = TSize;
   if (To != NULL) {
-    CopyMem (To, T, sizeof (ASN1_TIME));
+    CopyMem (To, (IN VOID *)T, sizeof (ASN1_TIME));
     ((ASN1_TIME *)To)->data = To + sizeof (ASN1_TIME);
     CopyMem (To + sizeof (ASN1_TIME), T->data, T->length);
   }
@@ -1577,7 +1577,7 @@ X509FormatDateTime (
     goto Cleanup;
   }
 
-  Ret = ASN1_TIME_set_string_X509 (Dt, DateTimeStr);
+  Ret = ASN1_TIME_set_string_X509 (Dt, (const char *)DateTimeStr);
   if (Ret != 1) {
     Status = FALSE;
     goto Cleanup;

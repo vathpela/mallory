@@ -43,7 +43,7 @@ char *CRYPTO_strndup(const char *str, size_t s, const char* file, int line)
 
     ret = CRYPTO_malloc(maxlen + 1, file, line);
     if (ret) {
-        memcpy(ret, str, maxlen);
+        memcpy(ret, (char *)str, maxlen);
         ret[maxlen] = CH_ZERO;
     }
     return ret;
@@ -59,7 +59,7 @@ void *CRYPTO_memdup(const void *data, size_t siz, const char* file, int line)
     ret = CRYPTO_malloc(siz, file, line);
     if (ret == NULL)
         return NULL;
-    return memcpy(ret, data, siz);
+    return memcpy(ret, (void *)data, siz);
 }
 
 size_t OPENSSL_strnlen(const char *str, size_t maxlen)

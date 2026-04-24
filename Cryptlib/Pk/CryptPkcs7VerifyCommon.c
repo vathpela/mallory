@@ -108,7 +108,7 @@ WrapPkcs7Data (
     //
     // Part4: OID value -- 0x2A 0x86 0x48 0x86 0xF7 0x0D 0x01 0x07 0x02.
     //
-    CopyMem (SignedData + 6, mOidValue, sizeof (mOidValue));
+    CopyMem (SignedData + 6, (IN VOID *)mOidValue, sizeof (mOidValue));
 
     //
     // Part5: 0xA0, 0x82.
@@ -125,7 +125,7 @@ WrapPkcs7Data (
     //
     // Part7: P7Data.
     //
-    CopyMem (SignedData + 19, P7Data, P7Length);
+    CopyMem (SignedData + 19, (IN UINT8 *)P7Data, P7Length);
   }
 
   *WrapFlag = Wrapped;
