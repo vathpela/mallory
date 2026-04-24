@@ -110,17 +110,11 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 //
 // Basic types mapping
 //
-typedef UINTN   size_t;
 typedef UINTN   off_t;
-typedef UINTN   u_int;
-typedef INTN    ptrdiff_t;
-typedef INTN    ssize_t;
 typedef INT64   time_t;
 typedef UINT8   sa_family_t;
-typedef UINT8   u_char;
 typedef UINT32  uid_t;
 typedef UINT32  gid_t;
-typedef CHAR16  wchar_t;
 
 //
 // File operations are not required for EFI building,
