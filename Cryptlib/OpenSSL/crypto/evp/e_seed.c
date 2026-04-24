@@ -14,6 +14,7 @@
 #include "internal/deprecated.h"
 
 #include <openssl/opensslconf.h>
+#ifndef OPENSSL_NO_SEED
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <string.h>
@@ -39,3 +40,4 @@ static int seed_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
     SEED_set_key(key, &EVP_C_DATA(EVP_SEED_KEY, ctx)->ks);
     return 1;
 }
+#endif //!OPENSSL_NO_SEED

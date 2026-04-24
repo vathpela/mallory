@@ -11,6 +11,8 @@
  * MD4 low level APIs are deprecated for public use, but still ok for
  * internal use.
  */
+# include <openssl/opensslconf.h>
+#ifndef OPENSSL_NO_MD4
 #include "internal/deprecated.h"
 
 #include <openssl/md4.h>
@@ -32,3 +34,4 @@ const EVP_MD *EVP_md4(void)
 {
     return &md4_md;
 }
+#endif //!OPENSSL_NO_MD4

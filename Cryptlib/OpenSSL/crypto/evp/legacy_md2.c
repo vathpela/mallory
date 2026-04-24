@@ -11,6 +11,8 @@
  * MD2 low level APIs are deprecated for public use, but still ok for
  * internal use.
  */
+#include <openssl/opensslconf.h>
+#ifndef OPENSSL_NO_MD2
 #include "internal/deprecated.h"
 
 #include <openssl/md2.h>
@@ -32,3 +34,4 @@ const EVP_MD *EVP_md2(void)
 {
     return &md2_md;
 }
+#endif //!OPENSSL_NO_MD2

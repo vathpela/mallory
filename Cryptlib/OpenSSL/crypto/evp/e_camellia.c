@@ -14,7 +14,7 @@
 #include "internal/deprecated.h"
 
 #include <openssl/opensslconf.h>
-
+#ifndef OPENSSL_NO_CAMELLIA
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <string.h>
@@ -347,3 +347,4 @@ static int camellia_ctr_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
 BLOCK_CIPHER_generic_pack(NID_camellia, 128, 0)
     BLOCK_CIPHER_generic_pack(NID_camellia, 192, 0)
     BLOCK_CIPHER_generic_pack(NID_camellia, 256, 0)
+# endif //OPENSSL_NO_CAMELLIA    

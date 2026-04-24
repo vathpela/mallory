@@ -11,6 +11,8 @@
  * MD5 low level APIs are deprecated for public use, but still ok for
  * internal use.
  */
+# include <openssl/opensslconf.h>
+#ifndef OPENSSL_NO_MD5
 #include "internal/deprecated.h"
 
 #include <openssl/md5.h>
@@ -32,3 +34,4 @@ const EVP_MD *EVP_md5(void)
 {
     return &md5_md;
 }
+#endif //!OPENSSL_NO_MD5

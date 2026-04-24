@@ -85,9 +85,9 @@ extern "C" {
 # ifndef OPENSSL_NO_CHACHA
 #  define OPENSSL_NO_CHACHA
 # endif
-# ifndef OPENSSL_NO_CMAC
+/*# ifndef OPENSSL_NO_CMAC
 #  define OPENSSL_NO_CMAC
-# endif
+# endif*/
 # ifndef OPENSSL_NO_CMP
 #  define OPENSSL_NO_CMP
 # endif
@@ -148,9 +148,9 @@ extern "C" {
 # ifndef OPENSSL_NO_EC2M
 #  define OPENSSL_NO_EC2M
 # endif
-# ifndef OPENSSL_NO_EC_NISTP_64_GCC_128
-#  define OPENSSL_NO_EC_NISTP_64_GCC_128
-# endif
+//# ifndef OPENSSL_NO_EC_NISTP_64_GCC_128
+//#  define OPENSSL_NO_EC_NISTP_64_GCC_128
+//# endif
 # ifndef OPENSSL_NO_EGD
 #  define OPENSSL_NO_EGD
 # endif
@@ -189,6 +189,9 @@ extern "C" {
 # endif
 # ifndef OPENSSL_NO_HQINTEROP
 #  define OPENSSL_NO_HQINTEROP
+# endif
+# ifndef OPENSSL_NO_HTTP
+#  define OPENSSL_NO_HTTP
 # endif
 # ifndef OPENSSL_NO_IDEA
 #  define OPENSSL_NO_IDEA
@@ -236,9 +239,10 @@ extern "C" {
 # ifndef OPENSSL_NO_OCB
 #  define OPENSSL_NO_OCB
 # endif
-# ifndef OPENSSL_NO_OCSP
-#  define OPENSSL_NO_OCSP
-# endif
+// TODO: Fix me
+//# ifndef OPENSSL_NO_OCSP
+//#  define OPENSSL_NO_OCSP
+//# endif
 # ifndef OPENSSL_NO_PADLOCKENG
 #  define OPENSSL_NO_PADLOCKENG
 # endif
@@ -263,9 +267,9 @@ extern "C" {
 # ifndef OPENSSL_NO_RC2
 #  define OPENSSL_NO_RC2
 # endif
-# ifndef OPENSSL_NO_RC4
+/*# ifndef OPENSSL_NO_RC4
 #  define OPENSSL_NO_RC4
-# endif
+# endif*/
 # ifndef OPENSSL_NO_RC5
 #  define OPENSSL_NO_RC5
 # endif

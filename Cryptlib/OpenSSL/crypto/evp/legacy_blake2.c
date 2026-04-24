@@ -6,7 +6,8 @@
  * in the file LICENSE in the source distribution or at
  * https://www.openssl.org/source/license.html
  */
-
+#include <openssl/opensslconf.h>
+#ifndef OPENSSL_NO_BLAKE2
 #include "crypto/evp.h"
 #include "prov/blake2.h"        /* diverse BLAKE2 macros */
 #include "legacy_meth.h"
@@ -66,3 +67,4 @@ const EVP_MD *EVP_blake2s256(void)
 {
     return &blake2s_md;
 }
+#endif //!OPENSSL_NO_BLAKE2
