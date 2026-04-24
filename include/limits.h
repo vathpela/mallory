@@ -6,7 +6,6 @@
 
 #pragma once
 
-#warning why
 #include_next <limits.h>
 
 
