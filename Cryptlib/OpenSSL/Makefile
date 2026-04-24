@@ -231,7 +231,6 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/bn/bn_x931p.o \
 		  crypto/bn/rsaz_exp.o \
 		  crypto/bn/rsaz_exp_x2.o \
-		  crypto/rsa/rsa_acvp_test_params.o \
 		  crypto/rsa/rsa_ameth.o \
 		  crypto/rsa/rsa_asn1.o \
 		  crypto/rsa/rsa_backend.o \
