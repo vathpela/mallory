@@ -82,7 +82,8 @@ const char *OpenSSL_version(int t)
     /* Cannot really fail but we would return empty strings anyway */
     (void)RUN_ONCE(&version_strings_once, version_strings_setup);
 #endif
-
+// TODO
+/*
     switch (t) {
     case OPENSSL_VERSION:
         return OPENSSL_VERSION_TEXT;
@@ -134,6 +135,6 @@ const char *OpenSSL_version(int t)
 #else
         return "OSSL_WINCTX: Undefined";
 #endif
-    }
+    }*/
     return "not available";
 }
