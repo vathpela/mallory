@@ -58,7 +58,6 @@ LDFLAGS		= -nostdlib -znocombreloc
 TARGET		= libopenssl.a
 OBJS		= crypto/cryptlib.o \
 		  crypto/mem.o \
-		  crypto/mem_clr.o \
 		  crypto/cversion.o \
 		  crypto/ex_data.o \
 		  crypto/cpt_err.o \
