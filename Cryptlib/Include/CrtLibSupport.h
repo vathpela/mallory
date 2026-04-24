@@ -84,13 +84,6 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #define EINVAL        22              /* Invalid argument */
 #define BUFSIZ       1024             /* size of buffer used by setbuf */
 #define EAFNOSUPPORT  47              /* Address family not supported by protocol family */
-#define INT_MAX       0x7FFFFFFF      /* Maximum (signed) int value */
-#define INT_MIN       (-INT_MAX-1)    /* Minimum (signed) int value */
-#define LONG_MAX      0X7FFFFFFFL     /* max value for a long */
-#define LONG_MIN      (-LONG_MAX-1)   /* min value for a long */
-#define UINT_MAX      0xFFFFFFFF      /* Maximum unsigned int value */
-#define ULONG_MAX     0xFFFFFFFF      /* Maximum unsigned long value */
-#define CHAR_BIT      8               /* Number of bits in a char */
 #define LOG_DAEMON   (3<<3)           /* system daemons */
 #define LOG_EMERG    0                /* system is unusable */
 #define LOG_ALERT    1                /* action must be taken immediately */
