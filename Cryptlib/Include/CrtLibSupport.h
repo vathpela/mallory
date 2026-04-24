@@ -56,11 +56,9 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 // bypass what's in <openssl/opensslconf.h> for OPENSSL_SYS_UEFI, and
 // define our own here.
 //
-#ifdef CONFIG_HEADER_BN_H
-  #error CONFIG_HEADER_BN_H already defined
-#endif
-
+#if defined(CONFIG_HEADER_BN_H) && !defined(OPENSSL_SYSNAME_UEFI)
 #define CONFIG_HEADER_BN_H
+#endif
 
 #if !defined (SIXTY_FOUR_BIT) && !defined (THIRTY_TWO_BIT)
   #if defined (MDE_CPU_X64) || defined (MDE_CPU_AARCH64) || defined (MDE_CPU_IA64) || defined (MDE_CPU_RISCV64) || defined (MDE_CPU_LOONGARCH64)
