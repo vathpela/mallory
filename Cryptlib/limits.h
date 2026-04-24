@@ -6,7 +6,10 @@
 
 #pragma once
 
-#include_next <limits.h>
+/*
+ * This is insanity
+ */
 
+#include_next <limits.h>
 
 // vim:fenc=utf-8:tw=75:noet
