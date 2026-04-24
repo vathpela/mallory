@@ -35,7 +35,6 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 #define OBJ_length(o) ((o)->length)
 #endif
 
-#if defined(ENABLE_CODESIGN_EKU)
 /**
   Check input P7Data is a wrapped ContentInfo structure or not. If not construct
   a new structure to wrap P7Data.
@@ -68,5 +67,4 @@ WrapPkcs7Data (
   OUT UINTN        *WrapDataSize
   );
 
-#endif
 #endif
