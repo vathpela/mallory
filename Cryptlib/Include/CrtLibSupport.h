@@ -91,7 +91,6 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #define UINT_MAX      0xFFFFFFFF      /* Maximum unsigned int value */
 #define ULONG_MAX     0xFFFFFFFF      /* Maximum unsigned long value */
 #define CHAR_BIT      8               /* Number of bits in a char */
-#define SIZE_MAX      0xFFFFFFFF      /* Maximum unsigned size_t */
 #define LOG_DAEMON   (3<<3)           /* system daemons */
 #define LOG_EMERG    0                /* system is unusable */
 #define LOG_ALERT    1                /* action must be taken immediately */
@@ -123,11 +122,9 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 typedef UINTN   size_t;
 typedef UINTN   off_t;
 typedef UINTN   u_int;
-typedef UINTN   intptr_t;
 typedef INTN    ptrdiff_t;
 typedef INTN    ssize_t;
 typedef INT64   time_t;
-typedef UINT8   __uint8_t;
 typedef UINT8   sa_family_t;
 typedef UINT8   u_char;
 typedef UINT32  uid_t;
@@ -170,6 +167,14 @@ struct dirent {
   char    d_name[255 + 1];  /* name must be no longer than this */
 };
 
+/*
+ * These are probably both wrong *and* useless...
+ */
+typedef uint64_t ino_t;
+typedef uint64_t dev_t;
+typedef uint64_t mode_t;
+typedef uint64_t nlink_t;
+
 struct stat {
   dev_t    st_dev;          /* inode's device */
   ino_t    st_ino;          /* inode's number */
@@ -196,7 +201,7 @@ struct stat {
 struct timezone;
 
 struct sockaddr {
-  __uint8_t      sa_len;      /* total length */
+  uint8_t      sa_len;      /* total length */
   sa_family_t    sa_family;   /* address family */
   char           sa_data[14]; /* actually longer; address value */
 };
