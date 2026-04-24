@@ -43,8 +43,6 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #include <Library/BaseLib.h>
 #include <Library/BaseMemoryLib.h>
 #include <Library/DebugLib.h>
-#include <Library/PrintLib.h>
-#include <Library/TimerLib.h>
 #include "Library/MemoryAllocationLib.h"
 #include "Library/DebugLib.h"
 
