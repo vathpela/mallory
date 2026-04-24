@@ -134,8 +134,6 @@ verify_eku(UINT8 *Cert, UINTN CertSize)
 		X509_free(x509);
 	}
 
-	OBJ_cleanup();
-
 	return TRUE;
 }
 
