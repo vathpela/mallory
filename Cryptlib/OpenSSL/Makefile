@@ -74,7 +74,6 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/o_time.o \
 		  crypto/o_str.o \
 		  crypto/o_dir.o \
-		  crypto/o_fips.o \
 		  crypto/o_init.o \
 		  crypto/threads_none.o \
 		  crypto/fips_ers.o \
