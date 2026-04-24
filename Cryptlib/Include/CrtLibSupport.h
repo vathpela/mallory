@@ -259,7 +259,6 @@ DivS64x64Remainder (
 
 void *memcpy     (void *, const void *, size_t);
 void setbuf(FILE *, char *buffer);
-int stat (const char *, struct stat *);
 
 //
 // Macros that directly map functions to BaseLib, BaseMemoryLib, and DebugLib functions
