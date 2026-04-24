@@ -17,6 +17,9 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 
 #include <stdarg.h>
 
+#include <efibind.h>
+
+#include "Base.h"
 #include "Library/BaseLib.h"
 #include "Library/BaseMemoryLib.h"
 #include "Library/MemoryAllocationLib.h"
