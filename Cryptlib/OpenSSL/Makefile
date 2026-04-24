@@ -398,15 +398,9 @@ OBJS		= crypto/cryptlib.o \
 		  crypto/evp/kem.o \
 		  crypto/evp/keymgmt_lib.o \
 		  crypto/evp/keymgmt_meth.o \
-		  crypto/evp/legacy_blake2.o \
-		  crypto/evp/legacy_md2.o \
-		  crypto/evp/legacy_md4.o \
 		  crypto/evp/legacy_md5.o \
 		  crypto/evp/legacy_md5_sha1.o \
-		  crypto/evp/legacy_mdc2.o \
-		  crypto/evp/legacy_ripemd.o \
 		  crypto/evp/legacy_sha.o \
-		  crypto/evp/legacy_wp.o \
 		  crypto/evp/mac_lib.o \
 		  crypto/evp/mac_meth.o \
 		  crypto/evp/m_null.o \
