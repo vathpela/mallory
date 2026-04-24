@@ -26,6 +26,102 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #define CRYPTO_NID_SECP521R1        0x0206
 #define CRYPTO_NID_BRAINPOOLP512R1  0x03A5
 
+/**
+  Return the minimum of two operands.
+
+  This macro returns the minimal of two operand specified by a and b.
+  Both a and b must be the same numerical types, signed or unsigned.
+
+  @param   a        The first operand with any numerical type.
+  @param   b        The second operand. It should be the same any numerical type with a.
+
+  @return  Minimum of two operands.
+
+**/
+/*#ifndef MIN
+#define MIN(a, b)                       \
+  (((a) < (b)) ? (a) : (b))
+#endif*/
+
+#define MAX_BIT     (1ULL << (sizeof (INTN) * 8 - 1))
+/**
+  Produces a RETURN_STATUS code with the highest bit set.
+
+  @param  StatusCode    The status code value to convert into a warning code.
+                        StatusCode must be in the range 0x00000000..0x7FFFFFFF.
+
+  @return The value specified by StatusCode with the highest bit set.
+
+**/
+#define ENCODE_ERROR(StatusCode)  ((RETURN_STATUS)(MAX_BIT | (StatusCode)))
+
+/**
+  Produces a RETURN_STATUS code with the highest bit clear.
+
+  @param  StatusCode    The status code value to convert into a warning code.
+                        StatusCode must be in the range 0x00000000..0x7FFFFFFF.
+
+  @return The value specified by StatusCode with the highest bit clear.
+
+**/
+#define ENCODE_WARNING(StatusCode)  ((RETURN_STATUS)(StatusCode))
+
+/**
+  Returns TRUE if a specified RETURN_STATUS code is an error code.
+
+  This function returns TRUE if StatusCode has the high bit set.  Otherwise, FALSE is returned.
+
+  @param  StatusCode    The status code value to evaluate.
+
+  @retval TRUE          The high bit of StatusCode is set.
+  @retval FALSE         The high bit of StatusCode is clear.
+
+**/
+#define RETURN_ERROR(StatusCode)  (((RETURN_STATUS)(StatusCode)) >= MAX_BIT)
+
+///
+/// The operation completed successfully.
+///
+#define RETURN_SUCCESS  (RETURN_STATUS)(0)
+
+///
+/// The image failed to load.
+///
+#define RETURN_LOAD_ERROR  ENCODE_ERROR (1)
+
+///
+/// The parameter was incorrect.
+///
+#define RETURN_INVALID_PARAMETER  ENCODE_ERROR (2)
+
+///
+/// The operation is not supported.
+///
+#define RETURN_UNSUPPORTED  ENCODE_ERROR (3)
+
+///
+/// The buffer was not the proper size for the request.
+///
+#define RETURN_BAD_BUFFER_SIZE  ENCODE_ERROR (4)
+
+///
+/// The buffer was not large enough to hold the requested data.
+/// The required buffer size is returned in the appropriate
+/// parameter when this error occurs.
+///
+#define RETURN_BUFFER_TOO_SMALL  ENCODE_ERROR (5)
+
+///
+/// The item was not found.
+///
+#define RETURN_NOT_FOUND  ENCODE_ERROR (14)
+
+///
+/// Function return status for EFI API.
+///
+typedef UINTN RETURN_STATUS;
+typedef RETURN_STATUS EFI_STATUS;
+
 ///
 /// MD5 digest size in bytes
 ///
