@@ -15,10 +15,6 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #if defined(__x86_64__)
 /* shim.h will check if the compiler is new enough in some other CU */
 
-#if !defined(GNU_EFI_USE_EXTERNAL_STDARG)
-#define GNU_EFI_USE_EXTERNAL_STDARG
-#endif
-
 #if !defined(GNU_EFI_USE_MS_ABI)
 #define GNU_EFI_USE_MS_ABI
 #endif
@@ -79,20 +75,6 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
   #else
     #error Unknown target architecture
   #endif
-#endif
-
-//
-// Map all va_xxxx elements to VA_xxx defined in MdePkg/Include/Base.h
-//
-#if !defined (__CC_ARM) // if va_list is not already defined
-#define va_list   VA_LIST
-#define va_arg    VA_ARG
-#define va_start  VA_START
-#define va_end    VA_END
-#else // __CC_ARM
-#define va_start(Marker, Parameter)  __va_start(Marker, Parameter)
-#define va_arg(Marker, TYPE)         __va_arg(Marker, TYPE)
-#define va_end(Marker)               ((void)0)
 #endif
 
 //
