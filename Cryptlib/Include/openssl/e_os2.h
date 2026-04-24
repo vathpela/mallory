@@ -196,6 +196,8 @@ extern "C" {
 
 # if defined(OPENSSL_SYS_UEFI) && !defined(ossl_ssize_t)
 #  define ossl_ssize_t INTN
+#  define MAX_BIT     (1ULL << (sizeof (INTN) * 8 - 1))
+#  define MAX_INTN   ((INTN)~MAX_BIT)
 #  define OSSL_SSIZE_MAX MAX_INTN
 # endif
 
@@ -220,6 +222,7 @@ extern "C" {
 /* Standard integer types */
 # define OPENSSL_NO_INTTYPES_H
 # define OPENSSL_NO_STDINT_H
+#if 0
 # if defined(OPENSSL_SYS_UEFI)
 typedef INT8 int8_t;
 typedef UINT8 uint8_t;
@@ -231,6 +234,10 @@ typedef INT64 int64_t;
 typedef UINT64 uint64_t;
 typedef UINTN uintptr_t;
 # elif (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || \
+typedef UINTN uintptr_t;
+#endif
+#endif /* 0 */
+# if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || \
      defined(__osf__) || defined(__sgi) || defined(__hpux) || \
      defined(OPENSSL_SYS_VMS) || defined (__OpenBSD__)
 #  include <inttypes.h>
@@ -262,6 +269,7 @@ typedef unsigned __int64 uint64_t;
 typedef intmax_t ossl_intmax_t;
 typedef uintmax_t ossl_uintmax_t;
 # else
+#include <efibind.h>
 /* Fall back to the largest we know we require and can handle */
 typedef int64_t ossl_intmax_t;
 typedef uint64_t ossl_uintmax_t;
