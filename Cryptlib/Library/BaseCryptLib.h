@@ -13,8 +13,6 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #ifndef __BASE_CRYPT_LIB_H__
 #define __BASE_CRYPT_LIB_H__
 
-#include <Uefi/UefiBaseType.h>
-
 #define CRYPTO_NID_NULL  0x0000
 
 // Hash
