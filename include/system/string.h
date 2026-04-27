@@ -78,7 +78,7 @@ mkdepbi2_(char *, strrchr, const char *, s, int, c)
 mkdepbi2_(size_t, strspn, const char *, s, const char *, accept)
 mkdepbi2_(char *, strstr, const char *, haystack, const char *, needle)
 
-mkbi3_(void *, memset, void *, s, int, c, size_t, n);
+mkbi3_(void *, memset, void *, s, int, c, size_t, n)
 
 #include <builtins_end_.h>
 
