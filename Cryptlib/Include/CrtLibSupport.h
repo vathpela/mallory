@@ -233,293 +233,71 @@ extern long  timezone;
 //
 // Function prototypes of CRT Library routines
 //
-void           *
-malloc     (
-  size_t
-  );
-
-void           *
-realloc    (
-  void *,
-  size_t
-  );
-
-void
-free        (
-  void *
-  );
-
-void           *
-memset     (
-  void *,
-  int,
-  size_t
-  );
-
-int
-memcmp      (
-  const void *,
-  const void *,
-  size_t
-  );
-
-int
-isdigit     (
-  int
-  );
-
-int
-isspace     (
-  int
-  );
-
-int
-isxdigit    (
-  int
-  );
-
-int
-isalnum     (
-  int
-  );
-
-int
-isupper     (
-  int
-  );
-
-int
-tolower     (
-  int
-  );
-
-int
-strcmp      (
-  const char *,
-  const char *
-  );
-
-int
-strncasecmp (
-  const char *,
-  const char *,
-  size_t
-  );
-
-char           *
-strchr     (
-  const char *,
-  int
-  );
-
-char           *
-strrchr    (
-  const char *,
-  int
-  );
-
-unsigned long
-strtoul     (
-  const char *,
-  char **,
-  int
-  );
-
-long
-strtol      (
-  const char *,
-  char **,
-  int
-  );
-
-char           *
-strerror   (
-  int
-  );
-
-size_t
-strspn      (
-  const char *,
-  const char *
-  );
-
-size_t
-strcspn     (
-  const char *,
-  const char *
-  );
-
-int
-printf      (
-  const char *,
-  ...
-  );
-
-int
-sscanf      (
-  const char *,
-  const char *,
-  ...
-  );
-
-FILE           *
-fopen      (
-  const char *,
-  const char *
-  );
-
-size_t
-fread       (
-  void *,
-  size_t,
-  size_t,
-  FILE *
-  );
-
-size_t
-fwrite      (
-  const void *,
-  size_t,
-  size_t,
-  FILE *
-  );
-
-int
-fclose      (
-  FILE *
-  );
-
-int
-fprintf     (
-  FILE *,
-  const char *,
-  ...
-  );
-
-time_t
-time        (
-  time_t *
-  );
-
-struct tm      *
-gmtime     (
-  const time_t *
-  );
-
-unsigned int
-sleep (
-  unsigned int  seconds
-  );
-
-int
-gettimeofday (
-  struct timeval   *tv,
-  struct timezone  *tz
-  );
-
-time_t
-mktime (
-  struct tm  *t
-  );
-
-uid_t
-getuid      (
-  void
-  );
-
-uid_t
-geteuid     (
-  void
-  );
-
-gid_t
-getgid      (
-  void
-  );
-
-gid_t
-getegid     (
-  void
-  );
-
-int
-issetugid   (
-  void
-  );
-
-void
-qsort       (
-  void *,
-  size_t,
-  size_t,
-  int (*)(const void *, const void *)
-  );
-
-char           *
-getenv     (
-  const char *
-  );
-
-char           *
-secure_getenv (
-  const char *
-  );
-
+void           *malloc     (size_t);
+void           *realloc    (void *, size_t);
+void           free        (void *);
+void           *memset     (void *, int, size_t);
+int            memcmp      (const void *, const void *, size_t);
+char           *strcpy     (char *, const char *);
+char           *strncpy    (char *, const char *, size_t);
+char           *strcat     (char *, const char *);
+int            isdigit     (int);
+int            isspace     (int);
+int            isxdigit    (int);
+int            isalnum     (int);
+int            isupper     (int);
+int            tolower     (int);
+int            strcmp      (const char *, const char *);
+int            strcasecmp  (const char *, const char *);
+char           *strchr     (const char *, int);
+char           *strrchr    (const char *, int);
+unsigned long  strtoul     (const char *, char **, int);
+long           strtol      (const char *, char **, int);
+char           *strerror   (int);
+size_t         strspn      (const char *, const char *);
+size_t         strcspn     (const char *, const char *);
+int            printf      (const char *, ...);
+int            sscanf      (const char *, const char *, ...);
+FILE           *fopen      (const char *, const char *);
+size_t         fread       (void *, size_t, size_t, FILE *);
+size_t         fwrite      (const void *, size_t, size_t, FILE *);
+FILE           *fopen      (const char *, const char *);
+size_t         fread       (void *, size_t, size_t, FILE *);
+size_t         fwrite      (const void *, size_t, size_t, FILE *);
+int            fclose      (FILE *);
+int            fprintf     (FILE *, const char *, ...);
+struct tm      *gmtime     (const time_t *);
+struct tm      *gmtime_r   (const time_t *, struct tm *);
+unsigned int   sleep       (unsigned int  seconds);
+int            gettimeofday(struct timeval   *tv, struct timezone  *tz);
+time_t         mktime      (struct tm  *t);
+uid_t          getuid      (void);
+uid_t          geteuid     (void);
+gid_t          getgid      (void);
+gid_t          getegid     (void);
+int            issetugid   (void);
+void           qsort       (void *, size_t, size_t, int (*)(const void *, const void *));
+char           *getenv     (const char *);
+char           *secure_getenv(const char *);
 #if defined (__GNUC__) && (__GNUC__ >= 2)
-void
-abort       (
-  void
-  ) __attribute__ ((__noreturn__));
-
+void           abort       (void) __attribute__ ((__noreturn__));
 #else
-void
-abort       (
-  void
-  );
-
+void           abort       (void);
 #endif
-int
-inet_pton   (
-  int,
-  const char *,
-  void *
-  );
-
-char *
-strcpy (
-  char        *strDest,
-  const char  *strSource
-  );
-
-char *
-strncpy (
-  char        *strDest,
-  const char  *strSource,
-  size_t      count
-  );
-
-char *
-strcat (
-  char        *strDest,
-  const char  *strSource
-  );
+int            inet_pton   (int, const char *, void *);
 
 //
 // Macros that directly map functions to BaseLib, BaseMemoryLib, and DebugLib functions
 //
-#define memcpy(dest, source, count)       CopyMem(dest,source,(UINTN)(count))
-#define memset(dest, ch, count)           SetMem(dest,(UINTN)(count),(UINT8)(ch))
-#define memchr(buf, ch, count)            ScanMem8(buf,(UINTN)(count),(UINT8)ch)
-#define memcmp(buf1, buf2, count)         (int)(CompareMem(buf1,buf2,(UINTN)(count)))
-#define memmove(dest, source, count)      CopyMem(dest,source,(UINTN)(count))
-#define strlen(str)                       (size_t)(AsciiStrnLenS(str,MAX_STRING_SIZE))
-#define strncmp(string1, string2, count)  (int)(AsciiStrnCmp(string1,string2,(UINTN)(count)))
-#define strcasecmp(str1, str2)            (int)AsciiStriCmp(str1,str2)
-#define strstr(s1, s2)                    AsciiStrStr(s1,s2)
-#define sprintf(buf, ...)                 AsciiSPrint(buf,MAX_STRING_SIZE,__VA_ARGS__)
+#define memcpy(dest,source,count)         ( {CopyMem(dest,(void *)source,(UINTN)(count)); dest; })
+#define memset(dest,ch,count)             SetMem(dest,(UINTN)(count),(UINT8)(ch))
+#define memchr(buf,ch,count)              ScanMem8((CHAR8 *)buf,(UINTN)(count),ch)
+#define memcmp(buf1,buf2,count)           (int)(CompareMem(buf1,buf2,(UINTN)(count)))
+#define memmove(dest,source,count)        CopyMem(dest,(void *)source,(UINTN)(count))
 #define localtime(timer)                  NULL
 #define assert(expression)
-#define offsetof(type, member)  OFFSET_OF(type,member)
-#define atoi(nptr)              AsciiStrDecimalToUintn(nptr)
+#define atoi(nptr)                        AsciiStrDecimalToUintn((const CHAR8 *)nptr)
+#define gettimeofday(tvp,tz)              do { (tvp)->tv_sec = time(NULL); (tvp)->tv_usec = 0; } while (0)
+#define gmtime_r(timer,result)            (result = NULL)
 
 #endif
