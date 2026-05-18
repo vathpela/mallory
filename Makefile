@@ -24,7 +24,7 @@ include $(TOPDIR)/include/coverity.mk
 include $(TOPDIR)/include/scan-build.mk
 include $(TOPDIR)/include/fanalyzer.mk
 
-TARGETS	= $(SHIMNAME)
+TARGETS	= $(SHIMNAME) findromsx64.efi
 TARGETS += $(SHIMNAME).debug $(MMNAME).debug $(FBNAME).debug
 ifneq ($(origin ENABLE_SHIM_HASH),undefined)
 TARGETS += $(SHIMHASHNAME)
@@ -152,6 +152,10 @@ LIBS = Cryptlib/libcryptlib.a \
        lib/lib.a \
        gnu-efi/$(ARCH_GNUEFI)/lib/libefi.a \
        gnu-efi/$(ARCH_GNUEFI)/gnuefi/libgnuefi.a
+
+findromsx64.efi : findromsx64.so
+findromsx64.so : findroms.o globals.o errlog.o $(LIBS)
+	$(LD) -o $@ $(LDFLAGS) $^ $(EFI_LIBS) lib/lib.a
 
 $(SHIMSONAME): $(OBJS) $(LIBS)
 	$(LD) -o $@ $(LDFLAGS) $^ $(EFI_LIBS) lib/lib.a
